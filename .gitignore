@@ -5,3 +5,6 @@
 *.rds
 *.pdf
 *scores.txt
+.Rproj.user
+*model.txt
+*codes*
