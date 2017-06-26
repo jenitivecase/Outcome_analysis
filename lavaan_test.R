@@ -36,4 +36,6 @@ use_items <- paste0("v", as.character(unlist(factor_items)))
 
 lavaan_model <- lavaan(model = lavaan_model_syn, 
                        data = QSEN_lavaan, estimator= "MLR", 
-                       missing = "fiml")
+                       missing = "fiml", verbose = TRUE)
+
+saveRDS(lavaan_model, paste0("QSEN_lavaan_analysis_result_", date, ".rds"))
