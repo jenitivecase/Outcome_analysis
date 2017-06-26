@@ -6,6 +6,39 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+#general options
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+options(scipen = 999)
+options(stringsAsFactors = FALSE)
+
+needed_packages <- c("mirt", "dplyr", "tidyr")
+load_packages <- function(x) {
+  if (!(x %in% rownames(installed.packages()))) {
+    install.packages(x)
+  }
+  suppressPackageStartupMessages(require(x, character.only = TRUE))
+}
+sapply(needed_packages, load_packages)
+
+#load data here
+fname <- "QSEN_analysis_result_20170624.rds"
+data <- readRDS(fname)
+outcome_name <- unlist(strsplit(fname, "_"))[1]
+
 ```
 
+#Outcome Subscores: `r outcome_name`
+To investigate how accurately items are assigned to outcome categories,
+a series of analyses were completed to determine items' factor loadings. 
+
+##Dataset
+The dataset analyzed consisted of responses to the 2013 Comprehensive Predictor, Forms A-F, 
+from test sessions that were completed between 11/15/2015 and 12/31/2015 or
+04/01/2016 or 05/15/2016. All respondents were students from BSN institutions.
+Pre-test items were not included. These decisions were made in order to select
+a dataset that represented optimal testing conditions.
+
+The dataset for the `r outcome_name` outcome included `r n_responses` responses to 
+`r n_items` items that were tagged to the outcome. 
+
+##Subscore: 
