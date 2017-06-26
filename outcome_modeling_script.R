@@ -78,16 +78,19 @@ for(name in seq_along(outcome_type_names)){
   syntax_fname <- paste0(outcome, "_mirt_model.txt")
   
   #output the resulting string
-  sink(file = syntax_fname)
-  cat(paste0(unlist(factor_syn), sep = "\n"))
-  sink()
+  model_syn <- NULL
+  for(i in 1:length(factor_syn)){
+    model_syn <- paste0(model_syn, paste0(as.character(factor_syn[[i]]), "\n"))
+  }
   
-  model_syn <- readLines(syntax_fname)
+  # sink(syntax_fname)
+  # print(model_syn)
+  # sink()
   
   #run analysis
   model <- mirt(data=data[, as.character(unlist(factor_items))], 
                 model=model_syn, itemtype = "2PL", method = "QMCEM",
-                technical = list(removeEmptyRows = TRUE, NCYCLES = 2000))
+                technical = list(removeEmptyRows = TRUE, NCYCLES = 5000))
   
   saveRDS(model, paste0(outcome, "_analysis_result_", date, ".rds"))
   
@@ -102,10 +105,10 @@ for(name in seq_along(outcome_type_names)){
   for(i in 1:length(subscore_f_load)){
     graph_data <- subscore_f_load[[i]]
     
-    graph_data <- 
+    graph_fcode <- subscore_codes[i]
     
     ggplot(data = graph_data, aes(x = F1)) + 
-      geom_histogram(binwidth = 0.05, alpha = 0.7, fill = colors[1]) + 
+      geom_histogram(binwidth = 0.05, alpha = 0.7, fill = "blue") + 
       scale_x_continuous(limits = c(-1, 1), breaks = seq(-1, 1, .2),
                          labels = seq(-1, 1, .2)) + 
       theme(plot.title = element_text(hjust = 0.5)) +
