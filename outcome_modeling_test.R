@@ -6,6 +6,8 @@ library(ggplot2)
 options(scipen = 999)
 options(stringsAsFactors = FALSE)
 
+date <- format.Date(Sys.Date(), "%Y%m%d")
+
 # outcomes_data <- read.table("item-level_RN-CP_outcome-scores.txt",
 #                             sep = ",", header = TRUE, as.is = TRUE,
 #                             strip.white = TRUE, fill = TRUE,
@@ -87,9 +89,11 @@ model <- mirt(data=QSEN[, as.character(unlist(factor_items))],
               model=model_syn, itemtype = "2PL", method = "QMCEM",
               technical = list(removeEmptyRows = TRUE, NCYCLES = 2000))
 
+saveRDS(model, paste0("QSEN_analysis_result_", date, ".rds"))
+
 factor_load <- summary(model)$rotF
 
-item_coef <- coef(model, simplify = TRUE, IRTpars = TRUE)$items
+# item_coef <- coef(model, simplify = TRUE, IRTpars = TRUE)$items
 
 item_f_load <- vector("list", length = length(factor_items))
 
@@ -106,7 +110,7 @@ gg_color_hue <- function(n) {
 
 colors = gg_color_hue(6)
 
-pdf("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/Outcome Modeling/QSEN_exploratory.pdf")
+pdf("QSEN_exploratory.pdf")
 #Factor 1
 ggplot(data = item_f_load[[1]], aes(x = F1)) + 
   geom_histogram(binwidth = 0.05, alpha = 0.7, fill = colors[1]) + 
@@ -114,7 +118,7 @@ ggplot(data = item_f_load[[1]], aes(x = F1)) +
                      labels = seq(-1, 1, .2)) + 
   theme(plot.title = element_text(hjust = 0.5)) +
   labs(x = "Factor Loadings", y = "Count", 
-       title = paste0("Nursing_Process: ", factors[1], " - Item Loadings"),
+       title = paste0("QSEN: ", factors[1], " - Item Loadings"),
        caption = paste0("Mean = ", round(mean(item_f_load[[1]]$F1), 3),
                         ", SD = ", round(sd(item_f_load[[1]]$F1), 3))) +
   theme_bw()
@@ -254,6 +258,9 @@ model_syn <- "F1 = 7588384, 7588401, 7588404, 7588392, 7588393, 7588395, 7588410
 model <- mirt(data=Nursing_Process_wide[, as.character(unlist(factor_items))], 
               model=model_syn, itemtype = "2PL", method = "QMCEM",
               technical = list(removeEmptyRows = TRUE, NCYCLES = 500))
+
+
+saveRDS(model, paste0("Nursing_Process_analysis_result_", date, ".rds"))
 
 factor_load <- summary(model)$rotF
 
