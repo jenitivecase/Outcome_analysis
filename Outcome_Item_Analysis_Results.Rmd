@@ -22,6 +22,8 @@ sapply(needed_packages, load_packages)
 
 ATI_colors <- c("#E53935", "#80D8FF", "#FFD54F", "#009688", "#FF9800", "#CDDC39")
 
+load_cuts <- c(-Inf, 0.32, 0.45, 0.55, 0.63, 0.71, Inf)
+
 #load data here
 fname <- "Nursing Process_analysis_result_20170626.rds"
 model <- readRDS(fname)
@@ -45,7 +47,6 @@ item_f_load <- vector("list", length = length(factor_items))
 for(i in 1:length(item_f_load)){
   item_f_load[[i]] <- as.data.frame(factor_load[which(rownames(factor_load) %in% factor_items[[i]]),])
 }
-
 
 ```
 
@@ -74,20 +75,29 @@ factor_code_sub <- gsub("F", "", factor_code)
 factor_name <- unique(outcome_code_key[which(outcome_code_key$OutcomeID_map == factor_code_sub),
                                 "OutcomeDescription_map"])
 
-ggplot(data = item_f_load[[i]], aes_string(x = factor_code)) + 
-  geom_histogram(binwidth = 0.05, alpha = 0.7, fill = ATI_colors[2]) + 
+plot_data <- item_f_load[[i]]
+plot_data$Loading <- cut(plot_data[, factor_code], breaks = c(load_cuts))
+
+ggplot(data = plot_data, aes_string(x = factor_code, fill = "Loading")) + 
+  geom_histogram(binwidth = 0.01, alpha = 0.7) + 
   scale_x_continuous(limits = c(-1, 1), breaks = seq(-1, 1, .2),
                      labels = seq(-1, 1, .2)) + 
+  theme_bw() +
+  theme(legend.position = "bottom", plot.title = element_text(hjust = 0.5)) +
   theme(plot.title = element_text(hjust = 0.5)) +
   labs(x = "Factor Loadings", y = "Count", 
        title = paste0(outcome_name, ": ", factor_name, " - Item Loadings"),
-       caption = paste0("Mean = ", round(mean(item_f_load[[i]][, factor_code]), 3),
-                        ", SD = ", round(sd(item_f_load[[i]][, factor_code]), 3))) +
-  theme_bw()
+       caption = paste0("Mean = ", round(mean(plot_data[, factor_code]), 3),
+                        ", SD = ", round(sd(plot_data[, factor_code]), 3))) +
+  scale_fill_manual(values = ATI_colors, 
+                     labels = c("Non-Loading", "Poor", "Fair", "Good", 
+                                "Very Good", "Excellent")) 
 
-worst_item <- rownames(item_f_load[[i]][which.min(item_f_load[[i]][, factor_code]),])
-worst_item_load <- min(item_f_load[[i]][, factor_code])
-best_item <- rownames(item_f_load[[i]][which.max(item_f_load[[i]][, factor_code]),])
-best_item_load <- max(item_f_load[[i]][, factor_code])
+
+
+worst_item <- rownames(plot_data[which.min(plot_data[, factor_code]),])
+worst_item_load <- min(plot_data[, factor_code])
+best_item <- rownames(plot_data[which.max(plot_data[, factor_code]),])
+best_item_load <- max(plot_data[, factor_code])
 
 ```
