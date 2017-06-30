@@ -28,12 +28,14 @@ outcome_type_codes <- outcome_type_key[which(outcome_type_key$OutcomeTypeID %in%
 outcome_type_names <- outcome_type_key[which(outcome_type_key$OutcomeTypeID %in% outcome_type_codes), 
                                        "OutcomeTypeName"]
 
-for(name in seq_along(outcome_type_names)){
+for(name in 1:length(outcome_type_names)){
   code <- outcome_type_codes[name]
   outcome <- outcome_type_names[name]
   
-  subscore_codes <- outcome_code_key[which(outcome_code_key$OutcomeTypeID == code), "OutcomeID"]
-  subscore_names <- outcome_code_key[which(outcome_code_key$OutcomeTypeID == code), "OutcomeDescription"]
+  subscore_codes <- outcome_code_key[which(outcome_code_key$OutcomeTypeID == code), 
+                                     c("OutcomeID_orig", "OutcomeID_map")]
+  subscore_names <- outcome_code_key[which(outcome_code_key$OutcomeTypeID == code), 
+                                     c("OutcomeDescription_orig", "OutcomeDescription_map")]
   
   data <- outcomes_data[which(outcomes_data$OutcomeTypeID == code), 
                 c("BookletID", "qbtbQuestionID",  
@@ -62,12 +64,18 @@ for(name in seq_along(outcome_type_names)){
   outcome_map <- outcome_map[which(!(outcome_map$qbtbQuestionID %in% bad_items)),]
   
   #preparing lists of the items loading onto each factor
-  factors <- subscore_codes
+  factors <- unique(subscore_codes$OutcomeID_map)
   factor_items <- vector("list", length(factors))
   
   for(i in 1:length(factors)){
-    factor_items[[i]] <- c(outcome_map[which(outcome_map[, "OutcomeID"] == factors[i]), "qbtbQuestionID"])
+    f_subscore_codes <- c(subscore_codes[which(subscore_codes$OutcomeID_map == factors[i]), 
+                                         "OutcomeID_orig"])
+    
+    factor_items[[i]] <- c(outcome_map[which(outcome_map[, "OutcomeID"] %in% f_subscore_codes), 
+                                       "qbtbQuestionID"])
   }
+  
+  saveRDS(factor_items, paste0(outcome, "_factor-items_", date, ".rds"))
   
   #formatting lists of items loading onto each factor for mirt model syntax
   factor_syn <- vector("list", length(factors))
@@ -93,31 +101,4 @@ for(name in seq_along(outcome_type_names)){
                 technical = list(removeEmptyRows = TRUE, NCYCLES = 5000))
   
   saveRDS(model, paste0(outcome, "_analysis_result_", date, ".rds"))
-  
-  factor_load <- summary(model)$rotF
-  
-  subscore_f_load <- vector("list", length = length(factor_items))
-  
-  for(i in 1:length(subscore_f_load)){
-    subscore_f_load[[i]] <- as.data.frame(factor_load[which(rownames(factor_load) %in% factor_items[[i]]),])
-  }
-  
-  for(i in 1:length(subscore_f_load)){
-    graph_data <- subscore_f_load[[i]]
-    
-    graph_fcode <- subscore_codes[i]
-    
-    ggplot(data = graph_data, aes(x = F1)) + 
-      geom_histogram(binwidth = 0.05, alpha = 0.7, fill = "blue") + 
-      scale_x_continuous(limits = c(-1, 1), breaks = seq(-1, 1, .2),
-                         labels = seq(-1, 1, .2)) + 
-      theme(plot.title = element_text(hjust = 0.5)) +
-      labs(x = "Factor Loadings", y = "Count", 
-           title = paste0("QSEN: ", factors[1], " - Item Loadings"),
-           caption = paste0("Mean = ", round(mean(graph_data[, paste0("F", i)]), 3),
-                            ", SD = ", round(sd(graph_data[, paste0("F", i)]), 3))) +
-      theme_bw()
-  }
-  
-  
 }
