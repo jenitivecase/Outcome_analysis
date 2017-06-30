@@ -113,7 +113,7 @@ colors = gg_color_hue(6)
 pdf("QSEN_exploratory.pdf")
 #Factor 1
 ggplot(data = item_f_load[[1]], aes(x = F1)) + 
-  geom_histogram(binwidth = 0.05, alpha = 0.7, fill = colors[1]) + 
+  geom_histogram(binwidth = 0.05, alpha = 0.7, fill = ATI_colors[1]) + 
   scale_x_continuous(limits = c(-1, 1), breaks = seq(-1, 1, .2),
                      labels = seq(-1, 1, .2)) + 
   theme(plot.title = element_text(hjust = 0.5)) +
