@@ -29,6 +29,8 @@ outcome_name <- unlist(strsplit(fname, "_"))[1]
 
 factor_items <- readRDS("Nursing Process_factor-items_20170630.rds")
 
+outcome_code_key <- read.csv("Outcome_codes.csv")
+
 ```
 
 
@@ -65,17 +67,27 @@ The dataset for the `r outcome_name` outcome included `r n_responses` responses 
 
 ```{r subscore_1}
 
-# i = 7
+# i = 11
 
 factor_code <- colnames(factor_load)[i]
-ggplot(data = item_f_load[[1]], aes_string(x = factor_code)) + 
+factor_code_sub <- gsub("F", "", factor_code)
+factor_name <- unique(outcome_code_key[which(outcome_code_key$OutcomeID_map == factor_code_sub),
+                                "OutcomeDescription_map"])
+
+ggplot(data = item_f_load[[i]], aes_string(x = factor_code)) + 
   geom_histogram(binwidth = 0.05, alpha = 0.7, fill = ATI_colors[2]) + 
   scale_x_continuous(limits = c(-1, 1), breaks = seq(-1, 1, .2),
                      labels = seq(-1, 1, .2)) + 
   theme(plot.title = element_text(hjust = 0.5)) +
   labs(x = "Factor Loadings", y = "Count", 
-       title = paste0(outcome_name, factor_code, " - Item Loadings"),
-       caption = paste0("Mean = ", round(mean(item_f_load[[i]][factor_code]), 3),
-                        ", SD = ", round(sd(item_f_load[[i]][factor_code]), 3))) +
+       title = paste0(outcome_name, ": ", factor_name, " - Item Loadings"),
+       caption = paste0("Mean = ", round(mean(item_f_load[[i]][, factor_code]), 3),
+                        ", SD = ", round(sd(item_f_load[[i]][, factor_code]), 3))) +
   theme_bw()
+
+worst_item <- rownames(item_f_load[[i]][which.min(item_f_load[[i]][, factor_code]),])
+worst_item_load <- min(item_f_load[[i]][, factor_code])
+best_item <- rownames(item_f_load[[i]][which.max(item_f_load[[i]][, factor_code]),])
+best_item_load <- max(item_f_load[[i]][, factor_code])
+
 ```
