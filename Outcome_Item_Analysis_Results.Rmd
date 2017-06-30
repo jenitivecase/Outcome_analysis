@@ -20,9 +20,9 @@ load_packages <- function(x) {
 }
 sapply(needed_packages, load_packages)
 
-ATI_colors <- c("#E53935", "#80D8FF", "#FFD54F", "#009688", "#FF9800", "#CDDC39")
+ATI_colors <- c("#000000", "#E53935", "#80D8FF", "#FF9800", "#FFD54F", "#009688", "#CDDC39")
 
-load_cuts <- c(-Inf, 0.32, 0.45, 0.55, 0.63, 0.71, Inf)
+load_cuts <- c(-Inf, 0, 0.32, 0.45, 0.55, 0.63, 0.71, Inf)
 
 #load data here
 fname <- "Nursing Process_analysis_result_20170626.rds"
@@ -90,7 +90,7 @@ ggplot(data = plot_data, aes_string(x = factor_code, fill = "Loading")) +
        caption = paste0("Mean = ", round(mean(plot_data[, factor_code]), 3),
                         ", SD = ", round(sd(plot_data[, factor_code]), 3))) +
   scale_fill_manual(values = ATI_colors, 
-                     labels = c("Non-Loading", "Poor", "Fair", "Good", 
+                     labels = c("Negatively Related", "Non-Loading", "Poor", "Fair", "Good", 
                                 "Very Good", "Excellent")) 
 
 
