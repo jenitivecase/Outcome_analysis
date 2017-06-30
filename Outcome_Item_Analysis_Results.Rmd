@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
 options(scipen = 999)
 options(stringsAsFactors = FALSE)
 
-needed_packages <- c("mirt", "dplyr", "tidyr")
+needed_packages <- c("mirt", "dplyr", "tidyr", "ggplot2")
 load_packages <- function(x) {
   if (!(x %in% rownames(installed.packages()))) {
     install.packages(x)
@@ -20,10 +20,30 @@ load_packages <- function(x) {
 }
 sapply(needed_packages, load_packages)
 
+ATI_colors <- c("#E53935", "#80D8FF", "#FFD54F", "#009688", "#FF9800", "#CDDC39")
+
 #load data here
-fname <- "QSEN_analysis_result_20170624.rds"
-data <- readRDS(fname)
+fname <- "Nursing Process_analysis_result_20170626.rds"
+model <- readRDS(fname)
 outcome_name <- unlist(strsplit(fname, "_"))[1]
+
+factor_items <- readRDS("Nursing Process_factor-items_20170630.rds")
+
+```
+
+
+```{r analysis}
+factor_load <- summary(model)$rotF
+
+n_factors <- ncol(factor_load)
+n_items <- nrow(factor_load)
+
+item_f_load <- vector("list", length = length(factor_items))
+
+for(i in 1:length(item_f_load)){
+  item_f_load[[i]] <- as.data.frame(factor_load[which(rownames(factor_load) %in% factor_items[[i]]),])
+}
+
 
 ```
 
@@ -41,4 +61,21 @@ a dataset that represented optimal testing conditions.
 The dataset for the `r outcome_name` outcome included `r n_responses` responses to 
 `r n_items` items that were tagged to the outcome. 
 
-##Subscore: 
+##Subscore plots: 
+
+```{r subscore_1}
+
+# i = 7
+
+factor_code <- colnames(factor_load)[i]
+ggplot(data = item_f_load[[1]], aes_string(x = factor_code)) + 
+  geom_histogram(binwidth = 0.05, alpha = 0.7, fill = ATI_colors[2]) + 
+  scale_x_continuous(limits = c(-1, 1), breaks = seq(-1, 1, .2),
+                     labels = seq(-1, 1, .2)) + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  labs(x = "Factor Loadings", y = "Count", 
+       title = paste0(outcome_name, factor_code, " - Item Loadings"),
+       caption = paste0("Mean = ", round(mean(item_f_load[[i]][factor_code]), 3),
+                        ", SD = ", round(sd(item_f_load[[i]][factor_code]), 3))) +
+  theme_bw()
+```
