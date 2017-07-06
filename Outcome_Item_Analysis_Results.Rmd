@@ -2,7 +2,7 @@
 title: "Outcome Item Analysis Results"
 author: "Jennifer Brussow"
 date: "June 26, 2017"
-output: html_document
+output: pdf_document
 ---
 
 ```{r setup, include=FALSE}
@@ -25,18 +25,19 @@ ATI_colors <- c("#000000", "#E53935", "#80D8FF", "#FF9800", "#FFD54F", "#009688"
 load_cuts <- c(-Inf, 0, 0.32, 0.45, 0.55, 0.63, 0.71, Inf)
 
 #load data here
-fname <- "Nursing Process_analysis_result_20170626.rds"
-model <- readRDS(fname)
+results_folder <- "./Results_20170630/"
+fname <- "Nursing Process_analysis_result_20170630.rds"
+model <- readRDS(paste0(results_folder, fname))
 outcome_name <- unlist(strsplit(fname, "_"))[1]
 
-factor_items <- readRDS("Nursing Process_factor-items_20170630.rds")
+factor_items <- readRDS(paste0(results_folder, "Nursing Process_factor-items_20170630.rds"))
 
 outcome_code_key <- read.csv("Outcome_codes.csv")
 
 ```
 
 
-```{r analysis}
+```{r analysis, include = FALSE}
 factor_load <- summary(model)$rotF
 
 n_factors <- ncol(factor_load)
@@ -61,43 +62,64 @@ from test sessions that were completed between 11/15/2015 and 12/31/2015 or
 Pre-test items were not included. These decisions were made in order to select
 a dataset that represented optimal testing conditions.
 
-The dataset for the `r outcome_name` outcome included `r n_responses` responses to 
+The dataset for the `r outcome_name` outcome included XXX responses to 
 `r n_items` items that were tagged to the outcome. 
 
 ##Subscore plots: 
 
-```{r subscore_1}
+```{r plot_setup}
 
-# i = 11
+subscore_plots <- vector("list", n_factors)
+worst_item_ids <- vector("list", n_factors)
+worst_item_loads <- vector("list", n_factors)
+best_item_ids <- vector("list", n_factors)
+best_item_loads <- vector("list", n_factors)
 
-factor_code <- colnames(factor_load)[i]
-factor_code_sub <- gsub("F", "", factor_code)
-factor_name <- unique(outcome_code_key[which(outcome_code_key$OutcomeID_map == factor_code_sub),
-                                "OutcomeDescription_map"])
-
-plot_data <- item_f_load[[i]]
-plot_data$Loading <- cut(plot_data[, factor_code], breaks = c(load_cuts))
-
-ggplot(data = plot_data, aes_string(x = factor_code, fill = "Loading")) + 
-  geom_histogram(binwidth = 0.01, alpha = 0.7) + 
-  scale_x_continuous(limits = c(-1, 1), breaks = seq(-1, 1, .2),
-                     labels = seq(-1, 1, .2)) + 
-  theme_bw() +
-  theme(legend.position = "bottom", plot.title = element_text(hjust = 0.5)) +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  labs(x = "Factor Loadings", y = "Count", 
-       title = paste0(outcome_name, ": ", factor_name, " - Item Loadings"),
-       caption = paste0("Mean = ", round(mean(plot_data[, factor_code]), 3),
-                        ", SD = ", round(sd(plot_data[, factor_code]), 3))) +
-  scale_fill_manual(values = ATI_colors, 
-                     labels = c("Negatively Related", "Non-Loading", "Poor", "Fair", "Good", 
-                                "Very Good", "Excellent")) 
-
-
-
-worst_item <- rownames(plot_data[which.min(plot_data[, factor_code]),])
-worst_item_load <- min(plot_data[, factor_code])
-best_item <- rownames(plot_data[which.max(plot_data[, factor_code]),])
-best_item_load <- max(plot_data[, factor_code])
-
+for(i in 1:n_factors){
+  factor_code <- colnames(factor_load)[i]
+  factor_code_sub <- gsub("F", "", factor_code)
+  factor_name <- unique(outcome_code_key[which(outcome_code_key$OutcomeID_map == factor_code_sub),
+                                  "OutcomeDescription_map"])
+  
+  plot_data <- item_f_load[[i]]
+  plot_data$Loading <- cut(plot_data[, factor_code], breaks = c(load_cuts))
+  
+  subscore_plots[[i]] <- ggplot(data = plot_data, aes_string(x = factor_code, fill = "Loading")) + 
+    geom_histogram(binwidth = 0.01, alpha = 0.7) + 
+    scale_x_continuous(limits = c(-1, 1), breaks = seq(-1, 1, .2),
+                       labels = seq(-1, 1, .2)) + 
+    theme_bw() +
+    theme(legend.position = "bottom", plot.title = element_text(hjust = 0.5)) +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    labs(x = "Factor Loadings", y = "Count", 
+         title = paste0(outcome_name, ": ", factor_name, " - Item Loadings"),
+         caption = paste0("Mean = ", round(mean(plot_data[, factor_code]), 3),
+                          ", SD = ", round(sd(plot_data[, factor_code]), 3))) +
+    scale_fill_manual(values = ATI_colors, 
+                       labels = c("Negatively Related", "Non-Loading", "Poor", "Fair", "Good", 
+                                  "Very Good", "Excellent")) 
+  
+  
+  
+  worst_item_ids[[i]] <- rownames(plot_data[which.min(plot_data[, factor_code]),])
+  worst_item_loads[[i]] <- min(plot_data[, factor_code])
+  best_item_ids[[i]] <- rownames(plot_data[which.max(plot_data[, factor_code]),])
+  best_item_loads[[i]] <- max(plot_data[, factor_code])
+}
 ```
+
+```{r analysis_out, results = "asis"}
+for(i in 1:length(subscore_plots)){
+  cat("\n")
+  print(subscore_plots[[i]])
+  cat("\n\n")
+  cat(paste0("Worst item: ", worst_item_ids[[i]], 
+               ", which had a loading of ", round(worst_item_loads[[i]], 3)))
+  cat("\n\n")
+  cat(paste0("Best item: ", best_item_ids[[i]], 
+               ", which had a loading of ", round(best_item_loads[[i]], 3)))
+  cat("\n")
+  cat("\pagebreak")
+}
+```
+
