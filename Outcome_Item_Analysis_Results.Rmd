@@ -108,18 +108,16 @@ for(i in 1:n_factors){
 }
 ```
 
-```{r analysis_out, results = "asis"}
+```{r analysis_out}
 for(i in 1:length(subscore_plots)){
   cat("\n")
   print(subscore_plots[[i]])
   cat("\n\n")
-  cat(paste0("Worst item: ", worst_item_ids[[i]], 
-               ", which had a loading of ", round(worst_item_loads[[i]], 3)))
-  cat("\n\n")
-  cat(paste0("Best item: ", best_item_ids[[i]], 
-               ", which had a loading of ", round(best_item_loads[[i]], 3)))
+  pander::Pandoc.brew(text = "Worst item: <%=worst_item_ids[[i]]%> ,
+              which had a loading of <%=round(worst_item_loads[[i]], 3)%>
+              Best item: <%=best_item_ids[[i]]%> ,
+              which had a loading of <%=round(best_item_loads[[i]], 3)%>.")
   cat("\n")
-  cat("\pagebreak")
 }
 ```
 
