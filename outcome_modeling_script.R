@@ -80,6 +80,7 @@ for(name in 1:length(outcome_type_names)){
   saveRDS(factor_items, paste0(outcome, "_factor-items_", date, ".rds"))
   
   gc()
+  
   #formatting lists of items loading onto each factor for mirt model syntax
   factor_syn <- vector("list", length(factors))
   for(i in 1:length(factors)){
