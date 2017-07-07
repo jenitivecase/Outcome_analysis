@@ -18,6 +18,8 @@ sapply(needed_packages, load_packages)
 
 load_cuts <- c(-Inf, 0, 0.32, 0.45, 0.55, 0.63, 0.71, Inf)
 
+# graph_colors <- c("#444444", "#65007A", "#BD5701", "#000570", "#006F7D", "#008735", "#438700")
+graph_colors <- c("#A1A1A1", '#ffd57f','#c7e9b4','#7fcdbb','#41b6c4','#2c7fb8','#405AC6')
 
 #TESTING: COMMENT OUT/DELETE FOR REAL RUN
 model_fname <- "Nursing Process_analysis_result_20170630.rds"
@@ -89,8 +91,8 @@ for(i in 1:n_factors){
   }
   plot_data$Loading <- cut(plot_data[, factor_code], breaks = c(load_cuts))
   
-  subscore_plots[[i]] <- ggplot(data = plot_data, aes_string(x = factor_code, fill = "Loading")) + 
-    geom_histogram(binwidth = 0.01, alpha = 0.7) + 
+  subscore_plots[[i]] <- ggplot(data = plot_data, aes_string(x = factor_code)) + 
+    geom_histogram(binwidth = 0.01, aes(fill = Loading)) + 
     scale_x_continuous(limits = c(-1, 1), breaks = seq(-1, 1, .2),
                        labels = seq(-1, 1, .2)) + 
     theme_bw() +
@@ -100,9 +102,10 @@ for(i in 1:n_factors){
          title = paste0(outcome_name, ": ", factor_name, " - Item Loadings"),
          caption = paste0("Mean = ", round(mean(plot_data[, factor_code]), 3),
                           ", SD = ", round(sd(plot_data[, factor_code]), 3))) +
-    scale_fill_manual(values = ATI_colors, 
+    scale_fill_manual(values = graph_colors, 
                        labels = c("Negatively Related", "Non-Loading", "Poor", "Fair", "Good", 
-                                  "Very Good", "Excellent")) 
+                                  "Very Good", "Excellent"),
+                      drop = FALSE) 
   
   
   
