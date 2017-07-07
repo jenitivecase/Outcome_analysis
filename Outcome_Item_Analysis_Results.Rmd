@@ -111,12 +111,19 @@ for(i in 1:n_factors){
 ```{r analysis_out, result = "asis"}
 for(i in 1:length(subscore_plots)){
   cat("\n")
+  cat("###Factor code: ", gsub("F", "", colnames(factor_load)[i]))
+  cat("\n")
+  cat("###Factor name: ", unique(outcome_code_key[which(outcome_code_key$OutcomeID_map == 
+                                                          gsub("F", "", colnames(factor_load)[i])),
+                                  "OutcomeDescription_map"]))  
+  cat("\n")
   print(subscore_plots[[i]])
   cat("\n\n")
-  pander::Pandoc.brew(text = "Worst item: <%=worst_item_ids[[i]]%> ,
-              which had a loading of <%=worst_item_loads[[i]]%>
-              Best item: <%=best_item_ids[[i]]%> ,
-              which had a loading of <%=best_item_loads[[i]]%>.")
+  cat(paste0("Worst item: ", worst_item_ids[[i]],
+             ", which had a loading of ", worst_item_loads[[i]]))
+  cat("\n\n")
+  cat(paste0("Best item: ", best_item_ids[[i]],
+             ", which had a loading of ", best_item_loads[[i]]))
   cat("\n")
 }
 ```
