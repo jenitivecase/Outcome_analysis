@@ -102,21 +102,21 @@ for(i in 1:n_factors){
   
   
   worst_item_ids[[i]] <- rownames(plot_data[which.min(plot_data[, factor_code]),])
-  worst_item_loads[[i]] <- min(plot_data[, factor_code])
+  worst_item_loads[[i]] <- round(min(plot_data[, factor_code]), 3)
   best_item_ids[[i]] <- rownames(plot_data[which.max(plot_data[, factor_code]),])
-  best_item_loads[[i]] <- max(plot_data[, factor_code])
+  best_item_loads[[i]] <- round(max(plot_data[, factor_code]), 3)
 }
 ```
 
-```{r analysis_out}
+```{r analysis_out, result = "asis"}
 for(i in 1:length(subscore_plots)){
   cat("\n")
   print(subscore_plots[[i]])
   cat("\n\n")
   pander::Pandoc.brew(text = "Worst item: <%=worst_item_ids[[i]]%> ,
-              which had a loading of <%=round(worst_item_loads[[i]], 3)%>
+              which had a loading of <%=worst_item_loads[[i]]%>
               Best item: <%=best_item_ids[[i]]%> ,
-              which had a loading of <%=round(best_item_loads[[i]], 3)%>.")
+              which had a loading of <%=best_item_loads[[i]]%>.")
   cat("\n")
 }
 ```
