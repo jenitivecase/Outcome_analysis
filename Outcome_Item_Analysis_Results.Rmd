@@ -21,15 +21,15 @@ load_cuts <- c(-Inf, 0, 0.32, 0.45, 0.55, 0.63, 0.71, Inf)
 # graph_colors <- c("#444444", "#65007A", "#BD5701", "#000570", "#006F7D", "#008735", "#438700")
 graph_colors <- c("#A1A1A1", '#ffd57f','#c7e9b4','#7fcdbb','#41b6c4','#2c7fb8','#405AC6')
 
-#TESTING: COMMENT OUT/DELETE FOR REAL RUN
-model_fname <- "Nursing Process_analysis_result_20170630.rds"
-factor_items_fname <- "Nursing Process_factor-items_20170630.rds"
-results_folder <- "./Results_20170630/"
+# #TESTING: COMMENT OUT/DELETE FOR REAL RUN
+# model_fname <- "Nursing Process_analysis_result_20170630.rds"
+# factor_items_fname <- "Nursing Process_factor-items_20170630.rds"
+# results_folder <- "./Results_20170630/"
 
-# #get data from master template
-# model_fname <- model_fnames[i]
-# factor_items_fname <- factor_items_fnames[i]
-# results_folder <- results_folder
+#get data from master template
+model_fname <- model_fnames[i]
+factor_items_fname <- factor_items_fnames[i]
+results_folder <- results_folder
 
 #load data here
 model <- readRDS(paste0(results_folder, model_fname))
