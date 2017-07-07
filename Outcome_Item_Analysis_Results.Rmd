@@ -19,15 +19,15 @@ sapply(needed_packages, load_packages)
 load_cuts <- c(-Inf, 0, 0.32, 0.45, 0.55, 0.63, 0.71, Inf)
 
 
-# #TESTING: COMMENT OUT/DELETE FOR REAL RUN
-# model_fname <- "Priority Setting_analysis_result_20170630.rds"
-# factor_items_fname <- "Priority Setting_factor-items_20170630.rds"
-# results_folder <- "./Results_20170630/"
+#TESTING: COMMENT OUT/DELETE FOR REAL RUN
+model_fname <- "Nursing Process_analysis_result_20170630.rds"
+factor_items_fname <- "Nursing Process_factor-items_20170630.rds"
+results_folder <- "./Results_20170630/"
 
-#get data from master template
-model_fname <- model_fnames[i]
-factor_items_fname <- factor_items_fnames[i]
-results_folder <- results_folder
+# #get data from master template
+# model_fname <- model_fnames[i]
+# factor_items_fname <- factor_items_fnames[i]
+# results_folder <- results_folder
 
 #load data here
 model <- readRDS(paste0(results_folder, model_fname))
@@ -114,15 +114,15 @@ for(i in 1:n_factors){
 
 ```
 
-```{r analysis_out, asis = TRUE, fig.height = 6}
+```{r analysis_out, results = "asis", fig.height = 6}
 for(i in 1:length(subscore_plots)){
-  cat("\n")
+  cat("\n\n")
   cat("###Factor code: ", gsub("F", "", colnames(factor_load)[i]))
-  cat("\n")
+  cat("\n\n")
   cat("###Factor name: ", unique(outcome_code_key[which(outcome_code_key$OutcomeID_map == 
                                                           gsub("F", "", colnames(factor_load)[i])),
                                   "OutcomeDescription_map"]))  
-  cat("\n")
+  cat("\n\n")
   print(subscore_plots[[i]])
   cat("\n\n")
   cat(paste0("Worst item: ", worst_item_ids[[i]],
@@ -130,7 +130,8 @@ for(i in 1:length(subscore_plots)){
   cat("\n\n")
   cat(paste0("Best item: ", best_item_ids[[i]],
              ", which had a loading of ", best_item_loads[[i]]))
-  cat("\n")
+  cat("\n\n")
+  cat("***")
 }
 ```
 
