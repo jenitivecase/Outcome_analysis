@@ -18,6 +18,12 @@ sapply(needed_packages, load_packages)
 
 load_cuts <- c(-Inf, 0, 0.32, 0.45, 0.55, 0.63, 0.71, Inf)
 
+
+# #TESTING: COMMENT OUT/DELETE FOR REAL RUN
+# model_fname <- "Priority Setting_analysis_result_20170630.rds"
+# factor_items_fname <- "Priority Setting_factor-items_20170630.rds"
+# results_folder <- "./Results_20170630/"
+
 #get data from master template
 model_fname <- model_fnames[i]
 factor_items_fname <- factor_items_fnames[i]
@@ -78,6 +84,9 @@ for(i in 1:n_factors){
                                   "OutcomeDescription_map"])
   
   plot_data <- item_f_load[[i]]
+  if(n_factors == 1){
+    colnames(plot_data) <- factor_code
+  }
   plot_data$Loading <- cut(plot_data[, factor_code], breaks = c(load_cuts))
   
   subscore_plots[[i]] <- ggplot(data = plot_data, aes_string(x = factor_code, fill = "Loading")) + 
@@ -102,6 +111,7 @@ for(i in 1:n_factors){
   best_item_ids[[i]] <- rownames(plot_data[which.max(plot_data[, factor_code]),])
   best_item_loads[[i]] <- round(max(plot_data[, factor_code]), 3)
 }
+
 ```
 
 ```{r analysis_out, asis = TRUE, fig.height = 6}
