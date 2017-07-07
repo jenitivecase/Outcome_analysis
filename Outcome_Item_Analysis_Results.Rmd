@@ -2,35 +2,31 @@
 title: "Outcome Item Analysis Results"
 author: "Jennifer Brussow"
 date: "June 26, 2017"
-output: pdf_document
+output: 
+  pdf_document:
+    keep_tex: no
 ---
 
 ```{r setup, include=FALSE}
 #general options
 knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
-options(scipen = 999)
-options(stringsAsFactors = FALSE)
 
-needed_packages <- c("mirt", "dplyr", "tidyr", "ggplot2")
-load_packages <- function(x) {
-  if (!(x %in% rownames(installed.packages()))) {
-    install.packages(x)
-  }
-  suppressPackageStartupMessages(require(x, character.only = TRUE))
-}
+source("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/options.R")
+
+needed_packages <- c("mirt", "ggplot2")
 sapply(needed_packages, load_packages)
-
-ATI_colors <- c("#000000", "#E53935", "#80D8FF", "#FF9800", "#FFD54F", "#009688", "#CDDC39")
 
 load_cuts <- c(-Inf, 0, 0.32, 0.45, 0.55, 0.63, 0.71, Inf)
 
-#load data here
-results_folder <- "./Results_20170630/"
-fname <- "Nursing Process_analysis_result_20170630.rds"
-model <- readRDS(paste0(results_folder, fname))
-outcome_name <- unlist(strsplit(fname, "_"))[1]
+#get data from master template
+model_fname <- model_fnames[i]
+factor_items_fname <- factor_items_fnames[i]
+results_folder <- results_folder
 
-factor_items <- readRDS(paste0(results_folder, "Nursing Process_factor-items_20170630.rds"))
+#load data here
+model <- readRDS(paste0(results_folder, model_fname))
+outcome_name <- unlist(strsplit(model_fname, "_"))[1]
+factor_items <- readRDS(paste0(results_folder, factor_items_fname))
 
 outcome_code_key <- read.csv("Outcome_codes.csv")
 
@@ -108,7 +104,7 @@ for(i in 1:n_factors){
 }
 ```
 
-```{r analysis_out, result = "asis"}
+```{r analysis_out, asis = TRUE, fig.height = 6}
 for(i in 1:length(subscore_plots)){
   cat("\n")
   cat("###Factor code: ", gsub("F", "", colnames(factor_load)[i]))
