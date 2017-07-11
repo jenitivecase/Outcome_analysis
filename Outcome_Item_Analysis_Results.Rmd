@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
 
 source("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/options.R")
 
-needed_packages <- c("mirt", "ggplot2", "pander")
+needed_packages <- c("mirt", "ggplot2", "xtable")
 sapply(needed_packages, load_packages)
 
 # panderOptions('knitr.auto.asis', FALSE)
@@ -146,7 +146,7 @@ for(i in 1:length(subscore_plots)){
   worst_item_table[1,] <- unique(worst_item_temp$stem)
   worst_item_table[2:5,] <- worst_item_temp$responseopt 
   
-  print(kable(worst_item_table))
+  print(xtable(worst_item_table), scalebox = 0.75)
   
   cat("\n\n")
   cat(paste0("Best item: ", best_item_ids[[i]],
@@ -159,7 +159,7 @@ for(i in 1:length(subscore_plots)){
   best_item_table[1,] <- unique(best_item_temp$stem)
   best_item_table[2:5,] <- best_item_temp$responseopt 
   
-  print(kable(best_item_table))
+  print(xtable(best_item_table))
   cat("\n\n")
   
   cat("***")
