@@ -13,23 +13,25 @@ knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
 
 source("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/options.R")
 
-needed_packages <- c("mirt", "ggplot2")
+needed_packages <- c("mirt", "ggplot2", "pander")
 sapply(needed_packages, load_packages)
+
+# panderOptions('knitr.auto.asis', FALSE)
 
 load_cuts <- c(-Inf, 0, 0.32, 0.45, 0.55, 0.63, 0.71, Inf)
 
 # graph_colors <- c("#444444", "#65007A", "#BD5701", "#000570", "#006F7D", "#008735", "#438700")
 graph_colors <- c("#A1A1A1", '#ffd57f','#c7e9b4','#7fcdbb','#41b6c4','#2c7fb8','#405AC6')
 
-# #TESTING: COMMENT OUT/DELETE FOR REAL RUN
-# model_fname <- "Nursing Process_analysis_result_20170630.rds"
-# factor_items_fname <- "Nursing Process_factor-items_20170630.rds"
-# results_folder <- "./Results_20170630/"
+#TESTING: COMMENT OUT/DELETE FOR REAL RUN
+model_fname <- "Nursing Process_analysis_result_20170630.rds"
+factor_items_fname <- "Nursing Process_factor-items_20170630.rds"
+results_folder <- "./Results_20170630/"
 
-#get data from master template
-model_fname <- model_fnames[i]
-factor_items_fname <- factor_items_fnames[i]
-results_folder <- results_folder
+# #get data from master template
+# model_fname <- model_fnames[i]
+# factor_items_fname <- factor_items_fnames[i]
+# results_folder <- results_folder
 
 #load data here
 model <- readRDS(paste0(results_folder, model_fname))
@@ -37,6 +39,12 @@ outcome_name <- unlist(strsplit(model_fname, "_"))[1]
 factor_items <- readRDS(paste0(results_folder, factor_items_fname))
 
 outcome_code_key <- read.csv("Outcome_codes.csv")
+item_content <- read.xlsx("Best-and-worst-items_Content-from-QBTB-db.xlsx")
+
+item_content[which(item_content$IsCorrect == 1), "responseopt"] <- 
+  paste0(item_content[which(item_content$IsCorrect == 1), "responseopt"], " (c)")
+
+item_content <- as.data.frame(apply(item_content, 2, FUN = iconv, from = "", to = "ASCII", sub=''))
 
 ```
 
@@ -131,9 +139,29 @@ for(i in 1:length(subscore_plots)){
   cat(paste0("Worst item: ", worst_item_ids[[i]],
              ", which had a loading of ", worst_item_loads[[i]]))
   cat("\n\n")
+  
+  worst_item_temp <- item_content[which(item_content$QuestionID == worst_item_ids[[i]]),]
+  
+  worst_item_table <- matrix(NA, nrow = nrow(worst_item_temp)+1, ncol = 1)
+  worst_item_table[1,] <- unique(worst_item_temp$stem)
+  worst_item_table[2:5,] <- worst_item_temp$responseopt 
+  
+  print(kable(worst_item_table))
+  
+  cat("\n\n")
   cat(paste0("Best item: ", best_item_ids[[i]],
              ", which had a loading of ", best_item_loads[[i]]))
   cat("\n\n")
+  
+  best_item_temp <- item_content[which(item_content$QuestionID == best_item_ids[[i]]),]
+  
+  best_item_table <- matrix(NA, nrow = nrow(best_item_temp)+1, ncol = 1)
+  best_item_table[1,] <- unique(best_item_temp$stem)
+  best_item_table[2:5,] <- best_item_temp$responseopt 
+  
+  print(kable(best_item_table))
+  cat("\n\n")
+  
   cat("***")
 }
 ```
