@@ -20,15 +20,15 @@ load_cuts <- c(-Inf, 0, 0.32, 0.45, 0.55, 0.63, 0.71, Inf)
 # graph_colors <- c("#444444", "#65007A", "#BD5701", "#000570", "#006F7D", "#008735", "#438700")
 graph_colors <- c("#A1A1A1", '#ffd57f','#c7e9b4','#7fcdbb','#41b6c4','#2c7fb8','#405AC6')
 
-#TESTING: COMMENT OUT/DELETE FOR REAL RUN
-model_fname <- "Nursing Process_analysis_result_20170630.rds"
-factor_items_fname <- "Nursing Process_factor-items_20170630.rds"
-results_folder <- "./Results_20170630/"
+# #TESTING: COMMENT OUT/DELETE FOR REAL RUN
+# model_fname <- "Nursing Process_analysis_result_20170630.rds"
+# factor_items_fname <- "Nursing Process_factor-items_20170630.rds"
+# results_folder <- "./Results_20170630/"
 
-# #get data from master template
-# model_fname <- model_fnames[i]
-# factor_items_fname <- factor_items_fnames[i]
-# results_folder <- results_folder
+#get data from master template
+model_fname <- model_fnames[i]
+factor_items_fname <- factor_items_fnames[i]
+results_folder <- results_folder
 
 #load data here
 model <- readRDS(paste0(results_folder, model_fname))
@@ -83,6 +83,29 @@ a dataset that represented optimal testing conditions.
 The dataset for the `r outcome_name` outcome included 
 `r prettyNum(nrow(extract.mirt(model, "data")), big.mark = ",")` responses to 
 `r n_items` items that were tagged to the outcome. 
+
+##Factor Loadings
+Factor loadings are a way of quantifying each item's relationship to the 
+underlying factor it is thought to measure. In these analyses, the factors are
+the categories within the `r outcome_name` outcome. 
+
+Larger factor loadings are better, as they indicate that the item is more strongly
+related to the factor it is thought to measure. Items with small factor loadings
+generally have content that is unrelated to the factor. Items with negative factor
+loadings generally contain content that is inversely related to the factor.
+
+While item content is typically thought to explain factor loadings, other properties
+such as response mode can also influence factor loadings.
+
+The factor loadings in the graphs below are color-coded according to their magnitude:
+
+* < 0.00: These items are negatively related to the factor
+* 0.00 - 0.32: These items are considered non-loading, or unrelated to the factor
+* 0.33 - 0.45: These items' relationship to the factor is considered poor
+* 0.46 - 0.55: These items' relationship to the factor is considered fair
+* 0.56 - 0.63: These items' relationship to the factor is considered good
+* 0.64 - 0.71: These items' relationship to the factor is considered very good
+* 0.72 - 1.00: These items' relationship to the factor is considered excellent
 
 ```{r plot_setup}
 
@@ -145,7 +168,10 @@ for(i in 1:length(subscore_plots)){
 
   cat("\n\n")
   
-  cat(paste0("**Worst item:** ", worst_item_ids[[i]],
+  cat(paste0("**Worst item for ", unique(outcome_code_key[which(outcome_code_key$OutcomeID_map == 
+                                                          gsub("F", "", colnames(factor_load)[i])),
+                                                          "OutcomeDescription_map"]),
+             ":** ", worst_item_ids[[i]],
              ", which had a loading of ", worst_item_loads[[i]]))
   cat("\n\n")
   
@@ -159,8 +185,12 @@ for(i in 1:length(subscore_plots)){
   
   cat("\n\n\\bigskip\\bigskip\\bigskip\n\n")
   
-  cat(paste0("**Best item:** ", best_item_ids[[i]],
+  cat(paste0("**Best item for ", unique(outcome_code_key[which(outcome_code_key$OutcomeID_map == 
+                                                          gsub("F", "", colnames(factor_load)[i])),
+                                                          "OutcomeDescription_map"]),
+             ":** ", best_item_ids[[i]],
              ", which had a loading of ", best_item_loads[[i]]))
+  
   cat("\n\n")
   
   best_item_temp <- item_content[which(item_content$QuestionID == best_item_ids[[i]]),]
