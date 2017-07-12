@@ -36,7 +36,7 @@ outcome_name <- unlist(strsplit(model_fname, "_"))[1]
 factor_items <- readRDS(paste0(results_folder, factor_items_fname))
 
 outcome_code_key <- read.csv("Outcome_codes.csv")
-item_content <- read.xlsx("Best-and-worst-items_Content-from-QBTB-db.xlsx")
+item_content <- read.xlsx("item_content_from_QBTB-db.xlsx")
 
 item_content[which(item_content$IsCorrect == 1), "responseopt"] <- 
   paste0(item_content[which(item_content$IsCorrect == 1), "responseopt"], " (c)")
