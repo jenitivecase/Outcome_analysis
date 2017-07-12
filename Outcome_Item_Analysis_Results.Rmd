@@ -4,7 +4,7 @@ author: "Jennifer Brussow"
 date: "June 26, 2017"
 output: 
   pdf_document:
-    keep_tex: no
+    keep_tex: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -13,10 +13,10 @@ knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
 
 source("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/options.R")
 
-needed_packages <- c("mirt", "ggplot2", "xtable")
+needed_packages <- c("mirt", "ggplot2", "pander")
 sapply(needed_packages, load_packages)
 
-# panderOptions('knitr.auto.asis', FALSE)
+panderOptions('knitr.auto.asis', FALSE)
 
 load_cuts <- c(-Inf, 0, 0.32, 0.45, 0.55, 0.63, 0.71, Inf)
 
@@ -45,6 +45,48 @@ item_content[which(item_content$IsCorrect == 1), "responseopt"] <-
   paste0(item_content[which(item_content$IsCorrect == 1), "responseopt"], " (c)")
 
 item_content <- as.data.frame(apply(item_content, 2, FUN = iconv, from = "", to = "ASCII", sub=''))
+
+
+
+newline_smart <- function(textstring, linewidth, tol = c(5, 5), capwidth = 1.2, separator = c(" ", "_")) {
+  if(length(tol) > 2){
+    stop("Please specify 1 or 2 values for tol.")
+  }
+  #makes character vector into literally a vector of characters
+  lets <- unlist(strsplit(textstring, split = "")) 
+  #assigns larger width values for capital characters
+  widthval <- ifelse(sapply(lets, function(x) x %in% LETTERS) == TRUE, 
+                     capwidth, 1) 
+  #calculates the cumulative length after each character
+  linelength <- cumsum(widthval) 
+  #if the string is already short enough, return it
+  if(linelength[length(linelength)] <= linewidth){
+    return(textstring) 
+  }
+  
+  #sets the index position to the first adj value > linewidth
+  index <- Position(function(x){x < linewidth}, linelength, right = TRUE) 
+  #creates a vector showing where break characters are
+  breaks <- grepl(separator[1], lets) | grepl(separator[2], lets) 
+  #if are two values and a break in the forward check when looking forward, NAs may be encountered. 
+  #ref is the last non-NA value in the range to avoid these
+  if(!is.na(tol[2]) && sum(breaks[(index+1):(index+tol[2])], na.rm = TRUE) > 0){ 
+    #the last non-NA value in the forward tol
+    ref <- Position(function(x){!is.na(x)}, breaks[(index+1):(index+tol[2])], right = TRUE) 
+    #have to add 1 to index so we aren't evaluating it. have to subtract 1 from result to remove trailing break
+    #set index to last break found in range
+    index <- Position(function(x){x == TRUE}, breaks[(index+1):(index+ref)], right = TRUE)+index-1 
+    #if no 2nd tol value or no breaks in forward tol, look backwards
+  } else if(sum(breaks[(index-tol[1]):(index-1)], na.rm = TRUE) > 0){ 
+    #have to subtract 1 from index so we aren't evaluating it. have to subtract 2 from result to remove trailing break & acct for index
+    index <- index-tol[1]+Position(function(x){x == TRUE}, breaks[(index-tol[1]):(index-1)], right = TRUE)-2
+  } #if neither condition is satisfied, index remains in its initial position.
+  
+  #put the string back together up to the index point
+  out <- paste0(paste0(lets[1:index], collapse = ""), "/n", paste0(lets[(index+1):length(lets)], collapse = ""))
+  
+  return(out)
+}
 
 ```
 
@@ -146,7 +188,11 @@ for(i in 1:length(subscore_plots)){
   worst_item_table[1,] <- unique(worst_item_temp$stem)
   worst_item_table[2:5,] <- worst_item_temp$responseopt 
   
-  print(xtable(worst_item_table), scalebox = 0.75)
+  cat("**", unique(worst_item_temp$stem), "**", "\n")
+  cat("A. ", worst_item_temp[2, "responseopt"], "\n")
+  cat("B. ", worst_item_temp[3, "responseopt"], "\n")
+  cat("C. ", worst_item_temp[4, "responseopt"], "\n")
+  cat("D. ", worst_item_temp[5, "responseopt"], "\n")
   
   cat("\n\n")
   cat(paste0("Best item: ", best_item_ids[[i]],
@@ -157,9 +203,10 @@ for(i in 1:length(subscore_plots)){
   
   best_item_table <- matrix(NA, nrow = nrow(best_item_temp)+1, ncol = 1)
   best_item_table[1,] <- unique(best_item_temp$stem)
-  best_item_table[2:5,] <- best_item_temp$responseopt 
+  best_item_table[2:5,] <- best_item_temp$responseopt
   
-  print(xtable(best_item_table))
+  print(pander(best_item_table, style = "simple", justify = "left", 
+        split.table = 100, split.cells = c(100)))
   cat("\n\n")
   
   cat("***")
