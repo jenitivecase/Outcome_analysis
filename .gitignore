@@ -11,3 +11,5 @@
 *.html
 *.xlsx
 *.tex
+*.txt
+/Reports/
