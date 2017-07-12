@@ -87,15 +87,21 @@ The dataset for the `r outcome_name` outcome included
 ##Factor Loadings
 Factor loadings are a way of quantifying each item's relationship to the 
 underlying factor it is thought to measure. In these analyses, the factors are
-the categories within the `r outcome_name` outcome. 
+the categories within the `r outcome_name` outcome. In the analysis, the construct
+each factor represents is inferred from the response patterns.
 
 Larger factor loadings are better, as they indicate that the item is more strongly
 related to the factor it is thought to measure. Items with small factor loadings
 generally have content that is unrelated to the factor. Items with negative factor
 loadings generally contain content that is inversely related to the factor.
 
-While item content is typically thought to explain factor loadings, other properties
-such as response mode can also influence factor loadings.
+Factor analysis is not a perfect process.
+While item content is typically thought to explain factor loadings, other item 
+properties such as response mode can also influence factor loadings. Additionally, 
+if items are incorrectly assigned, the factor's inferred construct 
+may not actually be representative of the desired construct intended by test developers.
+
+&nbsp;
 
 The factor loadings in the graphs below are color-coded according to their magnitude:
 
