@@ -80,18 +80,42 @@ outcome_map <- outcome_map[which(!(outcome_map$qbtbQuestionID %in% bad_items)),]
 n_factors <- length(unique(subscore_codes$OutcomeID_map))
 
 #run analysis
+#OLS solution
 model_OLS <- psych::fa(r = data[, 2:ncol(data)], factors = n_factors, 
                        missing = TRUE, impute = "mean", cor = "tet")
 
+#IRT solusion
 model_IRT_FA <- psych::irt.fa(r = data[, 2:ncol(data)], factors = n_factors, 
                        missing = TRUE, impute = "mean", cor = "tet")
 
-model_ML_fa <- psych::fa(r = data[, 2:ncol(data)], factors = n_factors, 
-                       missing = TRUE, impute = "mean",
-                       fm = "mle", cor = "tet")
+#MLE solution
+n_explore <- 8
+model_ML_fa <- vector("list", n_explore)
+BICs <- c(rep(NA, n_explore))
 
-model_ML_omega <- psych::omega(m = data[, 2:ncol(data)], factors = n_factors, fm = "mle")
+for(i in 1:n_explore){
+  model_ML_fa[[i]] <- psych::fa(r = data[, 2:ncol(data)], nfactors = i, 
+                           missing = TRUE, impute = "mean",
+                           fm = "mle", cor = "tet")
+  
+  BICs[i] <- model_ML_fa[[i]]$BIC
+}
 
+plot(BICs)
+
+
+print.psych(model_ML_fa[[5]])
+model_ML_fa[[5]]$values
+loadings <- as.data.frame(unclass(model_ML_fa[[5]]$loadings))
+mean(loadings[,1])
+mean(loadings[,2])
+mean(loadings[,3])
+mean(loadings[,4])
+mean(loadings[,5])
+
+mean(as.matrix(loadings))
+
+#Scree plotting
 
 library(nFactors)
 
