@@ -123,7 +123,7 @@ for(name in 1:length(outcome_type_names)){
          caption = paste0("Mean = ", round(mean(loadings_long$value), 3), 
                           ", SD = ", round(sd(loadings_long$value), 3)))
   
-  load_plot
+  print(load_plot)
   
   #plot BICs
   x <- c(1:n_explore)
