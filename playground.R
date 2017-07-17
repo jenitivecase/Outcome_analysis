@@ -3,8 +3,13 @@ load_packages <- function(x) {
   if (!(x %in% rownames(installed.packages()))) {
     install.packages(x)
   }
-  suppressPackageStartupMessages(require(x, character.only = TRUE))
+  library(x, character.only = TRUE)
 }
+
+item_outcome_info <- read.table("item_outcome_info.txt",
+                       sep = ",", header = TRUE, as.is = TRUE,
+                       strip.white = TRUE, fill = TRUE,
+                       blank.lines.skip = TRUE)
 
 NLN_data <- read.table("C:/Users/jennifer.brussow/Documents/test_NLN_data.txt",
                             sep = ",", header = TRUE, as.is = TRUE,
@@ -21,4 +26,5 @@ data_test <- NLN_data %>%
 
 
 NLN_items <- filter(item_outcome_info, OutcomeTypeName == "NLN Competency")
-
+length(unique(NLN_items$ï..qbtbQuestionID))
+table(NLN_items$OutcomeDescription)
