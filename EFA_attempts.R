@@ -105,16 +105,23 @@ for(name in 1:length(outcome_type_names)){
   # print.psych(model_ML_fa[[n_factors]])
   # model_ML_fa[[n_factors]]$values
   loadings <- as.data.frame(unclass(model_ML_fa[[n_factors]]$loadings))
+
+  # factor_loadings <- data.frame(matrix(NA, ncol = 4, nrow = n_factors, dimnames = list(
+  #   c(colnames(loadings)), c("Mean", "SD", "Min", "Max"))))
+  # factor_loadings$Mean <- as.matrix(round(colMeans(loadings), 3))
+  # factor_loadings$SD <- as.matrix(round(apply(loadings, 2, sd), 3)) 
+  # factor_loadings$Min <- as.matrix(round(apply(loadings, 2, min), 3)) 
+  # factor_loadings$Max <- as.matrix(round(apply(loadings, 2, max), 3)) 
+  # 
+  # gridExtra::grid.table(factor_loadings)
   
-  factor_loadings <- data.frame(matrix(NA, ncol = 4, nrow = n_factors, dimnames = list(
-    c(colnames(loadings)), c("Mean", "SD", "Min", "Max"))))
-  factor_loadings$Mean <- as.matrix(round(colMeans(loadings), 3))
-  factor_loadings$SD <- as.matrix(round(apply(loadings, 2, sd), 3)) 
-  factor_loadings$Min <- as.matrix(round(apply(loadings, 2, min), 3)) 
-  factor_loadings$Max <- as.matrix(round(apply(loadings, 2, max), 3)) 
-  
-  
-  gridExtra::grid.table(factor_loadings)
+  loadings_long <- gather(loadings, key = "Factor")
+  ggplot(loadings_long, aes(x = value, fill = Factor)) + 
+    geom_histogram(binwidth = 0.01, alpha = 0.7, position = "stack") + 
+    labs(x = "Loading", y = "Count", 
+         title = paste0("Factor Loadings for ", n_factors, "-factor Solution"),
+         caption = paste0("Mean = ", round(mean(loadings_long$value), 3), 
+                          ", SD = ", round(sd(loadings_long$value), 3)))
   
   #plot BICs
   x <- c(1:n_explore)
