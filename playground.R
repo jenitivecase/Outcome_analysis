@@ -1,11 +1,25 @@
-needed_packages <- c("mirt", "dplyr", "tidyr", "ggplot2")
-load_packages <- function(x) {
-  if (!(x %in% rownames(installed.packages()))) {
-    install.packages(x)
-  }
-  library(x, character.only = TRUE)
+source("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/options.R")
+
+#### GET ITEM LIST FOR DB ####
+
+results_folder <- "./Results_20170725/"
+
+factor_items_fnames <- grep("items", list.files(results_folder), value = TRUE)
+
+item_lists <- vector("list", length(factor_items_fnames))
+
+for(i in 1:length(item_lists)){
+  item_lists[[i]] <- c(unlist(readRDS(paste0(results_folder, factor_items_fnames[i]))))
 }
 
+item_list <- unique(unlist(item_lists))
+item_list <- paste(item_list, collapse = ",")
+
+sink("2016CP_item_list.txt")
+cat(item_list)
+sink()
+
+####
 item_outcome_info <- read.table("item_outcome_info.txt",
                        sep = ",", header = TRUE, as.is = TRUE,
                        strip.white = TRUE, fill = TRUE,
