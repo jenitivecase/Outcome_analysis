@@ -1,8 +1,5 @@
 #setup
-options(scipen = 999)
-options(stringsAsFactors = FALSE)
-
-date <- format.Date(Sys.Date(), "%Y%m%d")
+source("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/options.R")
 
 setwd("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/Outcome Modeling/Outcome_analysis")
 
@@ -15,7 +12,7 @@ load_packages <- function(x) {
 }
 sapply(needed_packages, load_packages)
 
-outcomes_data <- readRDS("item-level_RN-CP_outcome-scores.rds")
+outcomes_data <- readRDS("item-level_RN-2016CP_outcome-scores.rds")
 
 names(outcomes_data)[1] <- gsub("ï..", "", names(outcomes_data)[1])
 
@@ -27,6 +24,9 @@ outcome_type_codes <- outcome_type_key[which(outcome_type_key$OutcomeTypeID %in%
 
 outcome_type_names <- outcome_type_key[which(outcome_type_key$OutcomeTypeID %in% outcome_type_codes), 
                                        "OutcomeTypeName"]
+
+folder_name <- paste0("Results_", date)
+if(!dir.exists(folder_name)){ dir.create(folder_name) }
 
 for(name in 1:length(outcome_type_names)){
   code <- outcome_type_codes[name]
@@ -77,7 +77,7 @@ for(name in 1:length(outcome_type_names)){
                                        "qbtbQuestionID"])
   }
   
-  saveRDS(factor_items, paste0(outcome, "_factor-items_", date, ".rds"))
+  saveRDS(factor_items, paste0(folder_name, "/",outcome, "_factor-items_", date, ".rds"))
   
   gc()
   
@@ -104,7 +104,7 @@ for(name in 1:length(outcome_type_names)){
                 model=model_syn, itemtype = "2PL", method = "QMCEM",
                 technical = list(removeEmptyRows = TRUE, NCYCLES = 5000))
   
-  saveRDS(model, paste0(outcome, "_analysis_result_", date, ".rds"))
+  saveRDS(model, paste0(folder_name, "/", outcome, "_analysis_result_", date, ".rds"))
   
   gc()
 }
