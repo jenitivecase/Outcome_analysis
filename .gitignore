@@ -12,4 +12,6 @@
 *.xlsx
 *.tex
 *.txt
-/Reports/
+/*results*
+/*reports*
+/*bestandworst*
