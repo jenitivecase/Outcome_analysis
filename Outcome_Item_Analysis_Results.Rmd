@@ -29,6 +29,12 @@ graph_colors <- c("#A1A1A1", '#ffd57f','#c7e9b4','#7fcdbb','#41b6c4','#2c7fb8','
 model_fname <- model_fnames[i]
 factor_items_fname <- factor_items_fnames[i]
 results_folder <- results_folder
+CP_year <- CP_year
+CP_forms <- CP_forms
+daterange1_1 <- daterange1_1
+daterange1_2 <- daterange1_2
+daterange2_1 <- daterange2_1
+daterange2_2 <- daterange2_2
 
 #load data here
 model <- readRDS(paste0(results_folder, model_fname))
@@ -72,9 +78,10 @@ a series of analyses were completed to determine items' factor loadings.
 &nbsp;
 
 ##Dataset
-The dataset analyzed consisted of responses to the 2013 Comprehensive Predictor, Forms A-F, 
-from test sessions that were completed between 11/15/2015 and 12/31/2015 or
-04/01/2016 or 05/15/2016. 
+The dataset analyzed consisted of responses to the `r CP_year` 
+Comprehensive Predictor, Forms `r CP_forms`, 
+from test sessions that were completed between `r daterange1_1` and `r daterange1_2`
+or `r daterange2_1` or `r daterange2_2`. 
 
 All respondents were students from BSN institutions.
 Pre-test items were not included. These decisions were made in order to select
