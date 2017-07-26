@@ -20,15 +20,15 @@ load_cuts <- c(-Inf, 0, 0.32, 0.45, 0.55, 0.63, 0.71, Inf)
 # graph_colors <- c("#444444", "#65007A", "#BD5701", "#000570", "#006F7D", "#008735", "#438700")
 graph_colors <- c("#A1A1A1", '#ffd57f','#c7e9b4','#7fcdbb','#41b6c4','#2c7fb8','#405AC6')
 
-#TESTING: COMMENT OUT/DELETE FOR REAL RUN
-model_fname <- "Nursing Process_analysis_result_20170630.rds"
-factor_items_fname <- "Nursing Process_factor-items_20170630.rds"
-results_folder <- "./Results_20170630/"
+# #TESTING: COMMENT OUT/DELETE FOR REAL RUN
+# model_fname <- "Priority Setting_analysis_result_20170630.rds"
+# factor_items_fname <- "Priority Setting_factor-items_20170630.rds"
+# results_folder <- "./Results_20170630/"
 
-# #get data from master template
-# model_fname <- model_fnames[i]
-# factor_items_fname <- factor_items_fnames[i]
-# results_folder <- results_folder
+#get data from master template
+model_fname <- model_fnames[file]
+factor_items_fname <- factor_items_fnames[file]
+results_folder <- results_folder
 
 #load data here
 model <- readRDS(paste0(results_folder, model_fname))
@@ -60,7 +60,7 @@ for(i in 1:length(item_f_load)){
 
 ```
 
-#Outcome Subscores: `r outcome_name`
+#Outcome Subscores: Best & Worst Items for `r outcome_name` 
 
 *`r as.Date(date, "%Y%m%d")`*
 
@@ -113,6 +113,9 @@ The factor loadings in the graphs below are color-coded according to their magni
 * 0.64 - 0.71: These items' relationship to the factor is considered very good
 * 0.72 - 1.00: These items' relationship to the factor is considered excellent
 
+
+\pagebreak
+
 ```{r plot_setup}
 
 worst_item_ids <- vector("list", n_factors)
@@ -126,17 +129,25 @@ for(i in 1:n_factors){
   factor_name <- unique(outcome_code_key[which(outcome_code_key$OutcomeID_map == factor_code_sub),
                                   "OutcomeDescription_map"])
   
-  load_data <- item_f_load[[i]]
   if(n_factors == 1){
-    colnames(load_data) <- factor_code
+    load_data <- as.data.frame(item_f_load)
+  } else {
+    load_data <- item_f_load[[i]]
+    load_data <- load_data[order(load_data[, factor_code], na.last = NA),]
   }
+
+  if(n_factors == 1){
+    worst_item_ids[[i]] <- rownames(load_data)[1:10]
+    worst_item_loads[[i]] <- round(load_data[1:10, 1], 3)
+    best_item_ids[[i]] <- rownames(load_data)[(NROW(load_data)-9):NROW(load_data)]
+    best_item_loads[[i]] <- round(load_data[(NROW(load_data)-9):NROW(load_data), 1], 3)
+  } else if(nrow(load_data) >= 10){
+    worst_item_ids[[i]] <- rownames(load_data[1:10,])
+    worst_item_loads[[i]] <- round(load_data[1:10, factor_code], 3)
+    best_item_ids[[i]] <- rownames(load_data[(nrow(load_data)-9):nrow(load_data),])
+    best_item_loads[[i]] <- round(load_data[(nrow(load_data)-9):nrow(load_data), factor_code], 3)
+  } 
   
-  load_data <- load_data[order(load_data[, factor_code], na.last = NA),]
-  
-  worst_item_ids[[i]] <- rownames(load_data[1:10,])
-  worst_item_loads[[i]] <- round(load_data[1:10, factor_code], 3)
-  best_item_ids[[i]] <- rownames(load_data[(nrow(load_data)-9):nrow(load_data),])
-  best_item_loads[[i]] <- round(load_data[(nrow(load_data)-9):nrow(load_data), factor_code], 3)
 }
 
 ```
@@ -155,10 +166,11 @@ for(i in 1:n_factors){
                                                           gsub("F", "", colnames(factor_load)[i])),
                                                           "OutcomeDescription_map"]),
              ":** "))
+  cat("\n\n")
   
   for(item in 1:10){
-    cat(as.character(worst_item_ids[[i]][item]),
-             ", which had a loading of ", sprintf("%.f3", as.numeric(worst_item_loads[[i]][item])))
+    cat("Item ", as.character(worst_item_ids[[i]][item]),
+             ", which had a loading of ", sprintf("%.3f", as.numeric(worst_item_loads[[i]][item])))
     cat("\n\n")
   
     worst_item_temp <- item_content[which(item_content$QuestionID == worst_item_ids[[i]][item]),]
@@ -178,10 +190,11 @@ for(i in 1:n_factors){
                                                           gsub("F", "", colnames(factor_load)[i])),
                                                           "OutcomeDescription_map"]),
              ":** "))
+  cat("\n\n")
   
   for(item in 1:10){
-    cat(as.character(best_item_ids[[i]][item]),
-             ", which had a loading of ", sprintf("%.f3", as.numeric(best_item_loads[[i]][item])))
+    cat("Item ", as.character(best_item_ids[[i]][item]),
+             ", which had a loading of ", sprintf("%.3f", as.numeric(best_item_loads[[i]][item])))
     cat("\n\n")
   
     best_item_temp <- item_content[which(item_content$QuestionID == best_item_ids[[i]][item]),]
@@ -198,6 +211,7 @@ for(i in 1:n_factors){
   cat("\n\n")
   
   cat("***")
+  cat("\n\n\\pagebreak\n\n")
 }
 ```
 
