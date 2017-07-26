@@ -2,16 +2,28 @@ source("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/options.R")
 
 library(rmarkdown)
 
-out_folder <- paste0("Outcome_FLoad_Reports_", date)
-
+#2016 CP info
 CP_year <- "2016"
 CP_forms <- "A-C"
 daterange1_1 <- "11/15/2016"
 daterange1_2 <- "12/31/2016"
 daterange2_1 <- "04/01/2017"
 daterange2_2 <- "05/15/2017"
-
 results_folder <- "./Results_20170725/"
+
+# #2013 info
+# CP_year <- "2013"
+# CP_forms <- "A-F"
+# daterange1_1 <- "11/15/2015"
+# daterange1_2 <- "12/31/2015"
+# daterange2_1 <- "04/01/2016"
+# daterange2_2 <- "05/15/2016"
+# results_folder <- "./Results_20170630/"
+
+
+
+out_folder <- paste0(CP_year, "CP_Outcome_FLoad_Reports_", date)
+
 model_fnames <- grep("result", list.files(results_folder), value = TRUE)
 factor_items_fnames <- grep("items", list.files(results_folder), value = TRUE)
 
