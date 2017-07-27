@@ -58,6 +58,20 @@ for(i in 1:length(item_f_load)){
   item_f_load[[i]] <- as.data.frame(factor_load[which(rownames(factor_load) %in% factor_items[[i]]),])
 }
 
+N_count <- matrix(NA, nrow = n_factors, ncol = 2)
+colnames(N_count) <- c("Factor", "N_Items")
+
+for(i in 1:n_factors){
+  factor_code <- colnames(factor_load)[i]
+  factor_code_sub <- gsub("F", "", factor_code)
+  factor_name <- unique(outcome_code_key[which(outcome_code_key$OutcomeID_map == factor_code_sub),
+                                  "OutcomeDescription_map"])
+
+  N_count[i, "Factor"] <- factor_name
+  N_count[i, "N_Items"] <- length(factor_items[[i]])
+  
+}
+
 ```
 
 #Outcome Subscores: Best & Worst Items for `r outcome_name` 
@@ -72,9 +86,10 @@ a series of analyses were completed to determine items' factor loadings.
 &nbsp;
 
 ##Dataset
-The dataset analyzed consisted of responses to the 2013 Comprehensive Predictor, Forms A-F, 
-from test sessions that were completed between 11/15/2015 and 12/31/2015 or
-04/01/2016 or 05/15/2016. 
+The dataset analyzed consisted of responses to the `r CP_year` 
+Comprehensive Predictor, Forms `r CP_forms`, 
+from test sessions that were completed between `r daterange1_1` and `r daterange1_2`
+or `r daterange2_1` or `r daterange2_2`. 
 
 All respondents were students from BSN institutions.
 Pre-test items were not included. These decisions were made in order to select
@@ -83,6 +98,17 @@ a dataset that represented optimal testing conditions.
 The dataset for the `r outcome_name` outcome included 
 `r prettyNum(nrow(extract.mirt(model, "data")), big.mark = ",")` responses to 
 `r n_items` items that were tagged to the outcome. 
+
+##Factors within `r outcome_name` 
+The `r outcome_name` outcome has `r n_factors` factors, or subscores. Items are 
+assigned to these factors as follows:
+
+`r knitr::kable(N_count)`
+
+A brief explanation of factor loadings follows, and graphical representations of 
+the factor loadings for each subscore are provided on the following pages. 
+
+\pagebreak
 
 ##Factor Loadings
 Factor loadings are a way of quantifying each item's relationship to the 
@@ -103,7 +129,7 @@ may not actually be representative of the desired construct intended by test dev
 
 &nbsp;
 
-The factor loadings in the graphs below are color-coded according to their magnitude:
+The factor loadings can be categorized according to their magnitude:
 
 * < 0.00: These items are negatively related to the factor
 * 0.00 - 0.32: These items are considered non-loading, or unrelated to the factor
@@ -112,7 +138,6 @@ The factor loadings in the graphs below are color-coded according to their magni
 * 0.56 - 0.63: These items' relationship to the factor is considered good
 * 0.64 - 0.71: These items' relationship to the factor is considered very good
 * 0.72 - 1.00: These items' relationship to the factor is considered excellent
-
 
 \pagebreak
 
