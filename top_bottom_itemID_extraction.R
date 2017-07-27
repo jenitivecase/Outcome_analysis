@@ -256,7 +256,6 @@ worst_items <- bind_rows(worst_items)
 best_items <- lapply(best_items, FUN = bind_rows)
 best_items <- bind_rows(best_items)
 
-item_output <- createWorkbook()
 addWorksheet(item_output, paste0(CP_year, "worst_items"))
 writeData(item_output, paste0(CP_year, "worst_items"), worst_items)
 addWorksheet(item_output, paste0(CP_year, "best_items"))
