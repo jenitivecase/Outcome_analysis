@@ -110,13 +110,13 @@ for(file in 1:length(model_fnames)){
     if(n_factors == 1){
       worst_items[[file]]$Item <- rownames(load_data)[1:10]
       worst_items[[file]]$Loading <- round(load_data[1:10, 1], 3)
-      best_item_ids[[i]] <- rownames(load_data)[(NROW(load_data)-9):NROW(load_data)]
-      best_item_loads[[i]] <- round(load_data[(NROW(load_data)-9):NROW(load_data), 1], 3)
+      best_items[[file]]$Item <- rownames(load_data)[(NROW(load_data)-9):NROW(load_data)]
+      best_items[[file]]$Loading <- round(load_data[(NROW(load_data)-9):NROW(load_data), 1], 3)
     } else if(nrow(load_data) >= 10){
-      worst_item_ids[[i]] <- rownames(load_data[1:10,])
-      worst_item_loads[[i]] <- round(load_data[1:10, factor_code], 3)
-      best_item_ids[[i]] <- rownames(load_data[(nrow(load_data)-9):nrow(load_data),])
-      best_item_loads[[i]] <- round(load_data[(nrow(load_data)-9):nrow(load_data), factor_code], 3)
+      worst_items[[file]]$Item <- rownames(load_data[1:10,])
+      worst_items[[file]]$Loading <- round(load_data[1:10, factor_code], 3)
+      best_items[[file]]$Item <- rownames(load_data[(nrow(load_data)-9):nrow(load_data),])
+      best_items[[file]]$Loading <- round(load_data[(nrow(load_data)-9):nrow(load_data), factor_code], 3)
     } 
     
   }
