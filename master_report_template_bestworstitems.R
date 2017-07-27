@@ -1,9 +1,6 @@
 source("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/options.R")
 
 library(rmarkdown)
-source("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/options.R")
-
-library(rmarkdown)
 
 # 2016 CP info
 CP_year <- "2016"
