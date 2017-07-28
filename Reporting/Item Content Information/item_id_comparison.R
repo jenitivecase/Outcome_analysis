@@ -1,11 +1,15 @@
 source("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/options.R")
 
 
-worst_items_2013 <- read.xlsx("CP_BestWorstItems_20170728.xlsx", sheet = "2013worst_items")
-worst_items_2016 <- read.xlsx("CP_BestWorstItems_20170728.xlsx", sheet = "2016worst_items")
+worst_items_2013 <- read.xlsx("./Reporting/Item Content Information/CP_BestWorstItems_20170728.xlsx", 
+                              sheet = "2013worst_items")
+worst_items_2016 <- read.xlsx("./Reporting/Item Content Information/CP_BestWorstItems_20170728.xlsx", 
+                              sheet = "2016worst_items")
 
-best_items_2013 <- read.xlsx("CP_BestWorstItems_20170728.xlsx", sheet = "2013best_items")
-best_items_2016 <- read.xlsx("CP_BestWorstItems_20170728.xlsx", sheet = "2016best_items")
+best_items_2013 <- read.xlsx("./Reporting/Item Content Information/CP_BestWorstItems_20170728.xlsx", 
+                             sheet = "2013best_items")
+best_items_2016 <- read.xlsx("./Reporting/Item Content Information/CP_BestWorstItems_20170728.xlsx", 
+                             sheet = "2016best_items")
 
 worst_items_2013 <- worst_items_2013 %>%
   mutate(uniqueid = seq(1:nrow(worst_items_2013))) %>%
