@@ -25,38 +25,20 @@ best_items_2016 <- best_items_2016 %>%
   mutate(Type = "best")
 
 all_items <- bind_rows(list(worst_items_2013, worst_items_2016, 
-                            best_items_2013, best_items_2016))
+                            best_items_2013, best_items_2016)) %>%
+  filter(!is.na(Item))
 
-worst_item_dups_2013 <- worst_items_2013 %>% 
+all_items_dups <- all_items %>%
   group_by(Item) %>%
   mutate(duplicates = length(unique(uniqueid))) %>%
   filter(duplicates > 1) %>%
   ungroup() %>%
   select(Item) %>%
-  left_join(worst_items_2013, by = c("Item" = "Item"))
+  left_join(all_items, by = c("Item" = "Item")) %>%
+  unique() %>%
+  arrange(Item, Loading, Type) %>%
+  select(-uniqueid)
 
-
-worst_item_dups_2016 <- worst_items_2016 %>% 
+most_interesting <- all_items_dups %>%
   group_by(Item) %>%
-  mutate(duplicates = length(unique(uniqueid))) %>%
-  filter(duplicates > 1) %>%
-  ungroup() %>%
-  select(Item) %>%
-  left_join(worst_items_2016, by = c("Item" = "Item"))
-
-best_item_dups_2013 <- best_items_2013 %>% 
-  group_by(Item) %>%
-  mutate(duplicates = length(unique(uniqueid))) %>%
-  filter(duplicates > 1) %>%
-  ungroup() %>%
-  select(Item) %>%
-  left_join(best_items_2013, by = c("Item" = "Item"))
-
-
-best_item_dups_2016 <- best_items_2016 %>% 
-  group_by(Item) %>%
-  mutate(duplicates = length(unique(uniqueid))) %>%
-  filter(duplicates > 1) %>%
-  ungroup() %>%
-  select(Item) %>%
-  left_join(best_items_2016, by = c("Item" = "Item"))
+  filter(length(unique(Type)) > 1) 
