@@ -12,6 +12,4 @@
 *.xlsx
 *.tex
 *.txt
-/*results*
-/*reports*
-/*bestandworst*
+*.zip
