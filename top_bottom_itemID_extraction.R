@@ -83,17 +83,7 @@ for(file in 1:length(model_fnames)){
     factor_code_sub <- gsub("F", "", factor_code)
     factor_name <- unique(outcome_code_key[which(outcome_code_key$OutcomeID_map == factor_code_sub),
                                            "OutcomeDescription_map"])
-     
-    worst_temp <- data.frame(Outcome = rep(outcome_name, 10),
-                              Factor = rep(factor_name, 10),
-                              Item = rep(NA, 10),
-                              Loading = rep(NA, 10))
     
-    best_temp <- data.frame(Outcome = rep(outcome_name, 10),
-                              Factor = rep(factor_name, 10),
-                              Item = rep(NA, 10),
-                              Loading = rep(NA, 10))
-
     if(n_factors == 1){
       load_data <- as.data.frame(item_f_load)
     } else {
@@ -101,12 +91,50 @@ for(file in 1:length(model_fnames)){
       load_data <- load_data[order(load_data[, factor_code], na.last = NA),]
     }
     
+    
     if(n_factors == 1){
+      worst_temp <- data.frame(Outcome = rep(outcome_name, 10),
+                               Factor = rep(factor_name, 10),
+                               Item = rep(NA, 10),
+                               Loading = rep(NA, 10))
+      
+      best_temp <- data.frame(Outcome = rep(outcome_name, 10),
+                              Factor = rep(factor_name, 10),
+                              Item = rep(NA, 10),
+                              Loading = rep(NA, 10))
+      
       worst_temp$Item <- rownames(load_data)[1:10]
-      worst_temp$Loading <- round(load_data[1:10, 1], 3)
+      worst_temp$Loading <- round(load_data[1:10, factor_code], 3)
       best_temp$Item <- rownames(load_data)[(NROW(load_data)-9):NROW(load_data)]
       best_temp$Loading <- round(load_data[(NROW(load_data)-9):NROW(load_data), 1], 3)
-    } else if(nrow(load_data) >= 10){
+    } else if(nrow(load_data) < 20){
+      split <- floor(nrow(load_data)/2)
+      
+      worst_temp <- data.frame(Outcome = rep(outcome_name, split),
+                               Factor = rep(factor_name, split),
+                               Item = rep(NA, split),
+                               Loading = rep(NA, split))
+      
+      best_temp <- data.frame(Outcome = rep(outcome_name, split),
+                              Factor = rep(factor_name, split),
+                              Item = rep(NA, split),
+                              Loading = rep(NA, split))
+      
+      worst_temp$Item <- rownames(load_data[1:split,])
+      worst_temp$Loading <- round(load_data[1:split, factor_code], 3)
+      best_temp$Item <- rownames(load_data[(nrow(load_data)-split):nrow(load_data),])
+      best_temp$Loading <- round(load_data[(nrow(load_data)-split):nrow(load_data), factor_code], 3)
+    } else {
+      worst_temp <- data.frame(Outcome = rep(outcome_name, 10),
+                               Factor = rep(factor_name, 10),
+                               Item = rep(NA, 10),
+                               Loading = rep(NA, 10))
+      
+      best_temp <- data.frame(Outcome = rep(outcome_name, 10),
+                              Factor = rep(factor_name, 10),
+                              Item = rep(NA, 10),
+                              Loading = rep(NA, 10))
+      
       worst_temp$Item <- rownames(load_data[1:10,])
       worst_temp$Loading <- round(load_data[1:10, factor_code], 3)
       best_temp$Item <- rownames(load_data[(nrow(load_data)-9):nrow(load_data),])
@@ -214,17 +242,6 @@ for(file in 1:length(model_fnames)){
     factor_name <- unique(outcome_code_key[which(outcome_code_key$OutcomeID_map == factor_code_sub),
                                            "OutcomeDescription_map"])
     
-    
-    worst_temp <- data.frame(Outcome = rep(outcome_name, 10),
-                             Factor = rep(factor_name, 10),
-                             Item = rep(NA, 10),
-                             Loading = rep(NA, 10))
-    
-    best_temp <- data.frame(Outcome = rep(outcome_name, 10),
-                            Factor = rep(factor_name, 10),
-                            Item = rep(NA, 10),
-                            Loading = rep(NA, 10))
-    
     if(n_factors == 1){
       load_data <- as.data.frame(item_f_load)
     } else {
@@ -232,18 +249,50 @@ for(file in 1:length(model_fnames)){
       load_data <- load_data[order(load_data[, factor_code], na.last = NA),]
     }
     
+    
     if(n_factors == 1){
+      worst_temp <- data.frame(Outcome = rep(outcome_name, 10),
+                               Factor = rep(factor_name, 10),
+                               Item = rep(NA, 10),
+                               Loading = rep(NA, 10))
+      
+      best_temp <- data.frame(Outcome = rep(outcome_name, 10),
+                              Factor = rep(factor_name, 10),
+                              Item = rep(NA, 10),
+                              Loading = rep(NA, 10))
+      
       worst_temp$Item <- rownames(load_data)[1:10]
       worst_temp$Loading <- round(load_data[1:10, factor_code], 3)
       best_temp$Item <- rownames(load_data)[(NROW(load_data)-9):NROW(load_data)]
       best_temp$Loading <- round(load_data[(NROW(load_data)-9):NROW(load_data), 1], 3)
     } else if(nrow(load_data) < 20){
       split <- floor(nrow(load_data)/2)
+      
+      worst_temp <- data.frame(Outcome = rep(outcome_name, split),
+                               Factor = rep(factor_name, split),
+                               Item = rep(NA, split),
+                               Loading = rep(NA, split))
+      
+      best_temp <- data.frame(Outcome = rep(outcome_name, split),
+                              Factor = rep(factor_name, split),
+                              Item = rep(NA, split),
+                              Loading = rep(NA, split))
+      
       worst_temp$Item <- rownames(load_data[1:split,])
       worst_temp$Loading <- round(load_data[1:split, factor_code], 3)
       best_temp$Item <- rownames(load_data[(nrow(load_data)-split):nrow(load_data),])
       best_temp$Loading <- round(load_data[(nrow(load_data)-split):nrow(load_data), factor_code], 3)
     } else {
+      worst_temp <- data.frame(Outcome = rep(outcome_name, 10),
+                               Factor = rep(factor_name, 10),
+                               Item = rep(NA, 10),
+                               Loading = rep(NA, 10))
+      
+      best_temp <- data.frame(Outcome = rep(outcome_name, 10),
+                              Factor = rep(factor_name, 10),
+                              Item = rep(NA, 10),
+                              Loading = rep(NA, 10))
+      
       worst_temp$Item <- rownames(load_data[1:10,])
       worst_temp$Loading <- round(load_data[1:10, factor_code], 3)
       best_temp$Item <- rownames(load_data[(nrow(load_data)-9):nrow(load_data),])
