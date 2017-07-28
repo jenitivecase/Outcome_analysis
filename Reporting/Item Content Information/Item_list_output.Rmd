@@ -1,0 +1,39 @@
+---
+output: 
+  pdf_document:
+    keep_tex: no
+---
+
+```{r setup, include=FALSE}
+#general options
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+
+source("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/options.R")
+
+item_content <- read.xlsx("item_content_from_QBTB-db.xlsx")
+
+```
+
+```{r item_output}
+cat("\n\n")
+cat("##", item_list_descriptor))
+cat("\n\n")
+cat(item_list_text)  
+cat("\n\n")
+
+for(item in 1:nrow(item_data)){
+  cat("Item ", as.character(worst_item_ids[[i]][item]),
+           ", which had a loading of ", sprintf("%.3f", as.numeric(worst_item_loads[[i]][item])))
+  cat("\n\n")
+
+  worst_item_temp <- item_content[which(item_content$QuestionID == worst_item_ids[[i]][item]),]
+  
+  cat(unique(worst_item_temp$stem), "\n\n")
+  cat("A. ", worst_item_temp[1, "responseopt"], "\n\n")
+  cat("B. ", worst_item_temp[2, "responseopt"], "\n\n")
+  cat("C. ", worst_item_temp[3, "responseopt"], "\n\n")
+  cat("D. ", worst_item_temp[4, "responseopt"], "\n\n")
+  
+  cat("\n\n\\bigskip\n\n")
+}
+```
