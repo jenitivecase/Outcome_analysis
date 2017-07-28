@@ -44,11 +44,26 @@ all_items_dups <- all_items %>%
   arrange(Item, Loading, Type) %>%
   select(-uniqueid)
 
+
+#### INTERESTING ITEMS ####
 most_interesting <- all_items_dups %>%
   group_by(Item) %>%
   filter(length(unique(Type)) > 1) %>%
   ungroup()
 
+item_data <-  most_interesting
+short_descriptor <- "Worst_AND_Best_Items"
+item_list_descriptor <- "Items Appearing in Worst-Loading Items and Best-Loading Items"
+item_list_text <- paste0("These ", nrow(item_data), " items appeared in the worst-loading items 
+                         on at least one subscore and in the best-loading items on at
+                         least one other subscore.")
+rmarkdown::render(paste0("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/Outcome Modeling/", 
+                         "Outcome_analysis/Reporting/Item Content Information/Item_list_output.Rmd"),
+                  output_file = paste0(short_descriptor, "_Report_", date, ".pdf"),
+                  output_dir = paste0("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/Outcome Modeling/", 
+                                      "Outcome_analysis/Reporting/Item Content Information/", out_folder))
+
+#### BAD ITEMS ####
 bad_items <- all_items_dups %>%
   group_by(Item) %>%
   mutate(types = length(unique(Type))) %>%
@@ -56,6 +71,17 @@ bad_items <- all_items_dups %>%
   ungroup() %>%
   select(-types) %>%
   filter(Type == "worst")
+
+item_data <- bad_items
+short_descriptor <- "Bad_items"
+item_list_descriptor <- "Items Only Appearing in Worst-Loading Items"
+item_list_text <- paste0("These ", nrow(item_data), " items only appeared in the worst-loading items on their 
+                         given subscores.")
+rmarkdown::render(paste0("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/Outcome Modeling/", 
+                         "Outcome_analysis/Reporting/Item Content Information/Item_list_output.Rmd"),
+                  output_file = paste0(short_descriptor, "_Report_", date, ".pdf"),
+                  output_dir = paste0("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/Outcome Modeling/", 
+                                      "Outcome_analysis/Reporting/Item Content Information/", out_folder))
 
 #### REALLY BAD ITEMS ####
 really_bad_items <- bad_items %>%
