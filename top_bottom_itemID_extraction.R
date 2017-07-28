@@ -122,8 +122,8 @@ for(file in 1:length(model_fnames)){
       
       worst_temp$Item <- rownames(load_data[1:split,])
       worst_temp$Loading <- round(load_data[1:split, factor_code], 3)
-      best_temp$Item <- rownames(load_data[(nrow(load_data)-split):nrow(load_data),])
-      best_temp$Loading <- round(load_data[(nrow(load_data)-split):nrow(load_data), factor_code], 3)
+      best_temp$Item <- rownames(load_data[(nrow(load_data)-split+1):nrow(load_data),])
+      best_temp$Loading <- round(load_data[(nrow(load_data)-split+1):nrow(load_data), factor_code], 3)
     } else {
       worst_temp <- data.frame(Outcome = rep(outcome_name, 10),
                                Factor = rep(factor_name, 10),
@@ -280,8 +280,8 @@ for(file in 1:length(model_fnames)){
       
       worst_temp$Item <- rownames(load_data[1:split,])
       worst_temp$Loading <- round(load_data[1:split, factor_code], 3)
-      best_temp$Item <- rownames(load_data[(nrow(load_data)-split):nrow(load_data),])
-      best_temp$Loading <- round(load_data[(nrow(load_data)-split):nrow(load_data), factor_code], 3)
+      best_temp$Item <- rownames(load_data[(nrow(load_data)-split+1):nrow(load_data),])
+      best_temp$Loading <- round(load_data[(nrow(load_data)-split+1):nrow(load_data), factor_code], 3)
     } else {
       worst_temp <- data.frame(Outcome = rep(outcome_name, 10),
                                Factor = rep(factor_name, 10),
