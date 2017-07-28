@@ -1,0 +1,245 @@
+---
+output: 
+  pdf_document:
+    keep_tex: no
+---
+
+```{r setup, include=FALSE}
+#general options
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+
+source("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/options.R")
+
+needed_packages <- c("mirt", "ggplot2", "pander")
+sapply(needed_packages, load_packages)
+
+panderOptions('knitr.auto.asis', FALSE)
+
+load_cuts <- c(-Inf, 0, 0.32, 0.45, 0.55, 0.63, 0.71, Inf)
+
+# graph_colors <- c("#444444", "#65007A", "#BD5701", "#000570", "#006F7D", "#008735", "#438700")
+graph_colors <- c("#A1A1A1", '#ffd57f','#c7e9b4','#7fcdbb','#41b6c4','#2c7fb8','#405AC6')
+
+# #TESTING: COMMENT OUT/DELETE FOR REAL RUN
+# model_fname <- "Nursing Process_analysis_result_20170630.rds"
+# factor_items_fname <- "Nursing Process_factor-items_20170630.rds"
+# results_folder <- "./Results_20170630/"
+# CP_year <- "2016"
+# CP_forms <- "A-C"
+# daterange1_1 <- "11/15/2016"
+# daterange1_2 <- "12/31/2016"
+# daterange2_1 <- "04/01/2017"
+# daterange2_2 <- "05/15/2017"
+
+#get data from master template
+model_fname <- model_fnames[i]
+factor_items_fname <- factor_items_fnames[i]
+results_folder <- results_folder
+CP_year <- CP_year
+CP_forms <- CP_forms
+daterange1_1 <- daterange1_1
+daterange1_2 <- daterange1_2
+daterange2_1 <- daterange2_1
+daterange2_2 <- daterange2_2
+
+#load data here
+model <- readRDS(paste0(results_folder, model_fname))
+outcome_name <- unlist(strsplit(model_fname, "_"))[1]
+factor_items <- readRDS(paste0(results_folder, factor_items_fname))
+
+outcome_code_key <- read.csv("Outcome_codes.csv")
+item_content <- read.xlsx("item_content_from_QBTB-db.xlsx")
+
+item_content[which(item_content$IsCorrect == 1), "responseopt"] <- 
+  paste0(item_content[which(item_content$IsCorrect == 1), "responseopt"], " (c)")
+
+item_content <- as.data.frame(apply(item_content, 2, FUN = iconv, from = "", to = "ASCII", sub=''))
+
+```
+
+
+```{r analysis, include = FALSE}
+factor_load <- summary(model)$rotF
+
+n_factors <- ncol(factor_load)
+n_items <- nrow(factor_load)
+
+item_f_load <- vector("list", length = length(factor_items))
+
+for(i in 1:length(item_f_load)){
+  item_f_load[[i]] <- as.data.frame(factor_load[which(rownames(factor_load) %in% factor_items[[i]]),])
+}
+
+```
+
+```{r plot_setup}
+
+subscore_plots <- vector("list", n_factors)
+worst_item_ids <- vector("list", n_factors)
+worst_item_loads <- vector("list", n_factors)
+best_item_ids <- vector("list", n_factors)
+best_item_loads <- vector("list", n_factors)
+
+N_count <- matrix(NA, nrow = n_factors, ncol = 2)
+colnames(N_count) <- c("Factor", "N_Items")
+
+for(i in 1:n_factors){
+  factor_code <- colnames(factor_load)[i]
+  factor_code_sub <- gsub("F", "", factor_code)
+  factor_name <- unique(outcome_code_key[which(outcome_code_key$OutcomeID_map == factor_code_sub),
+                                  "OutcomeDescription_map"])
+
+  N_count[i, "Factor"] <- factor_name
+  N_count[i, "N_Items"] <- length(factor_items[[i]])
+  
+  plot_data <- item_f_load[[i]]
+  if(n_factors == 1){
+    colnames(plot_data) <- factor_code
+  }
+  plot_data$Loading <- cut(plot_data[, factor_code], breaks = c(load_cuts))
+  
+  subscore_plots[[i]] <- ggplot(data = plot_data, aes_string(x = factor_code)) + 
+    geom_histogram(binwidth = 0.01, aes(fill = Loading)) + 
+    scale_x_continuous(limits = c(-1, 1), breaks = seq(-1, 1, .2),
+                       labels = seq(-1, 1, .2)) + 
+    theme_bw() +
+    theme(legend.position = "bottom", plot.title = element_text(hjust = 0.5)) +
+    theme(plot.title = element_text(hjust = 0.5)) +
+    labs(x = "Factor Loadings", y = "Count", 
+         title = paste0(outcome_name, ": ", factor_name, " - Item Loadings"),
+         caption = paste0("Mean = ", round(mean(plot_data[, factor_code]), 3),
+                          ", SD = ", round(sd(plot_data[, factor_code]), 3))) +
+    scale_fill_manual(values = graph_colors, 
+                       labels = c("Negatively Related", "Non-Loading", "Poor", "Fair", "Good", 
+                                  "Very Good", "Excellent"),
+                      drop = FALSE) 
+  
+  
+  
+  worst_item_ids[[i]] <- rownames(plot_data[which.min(plot_data[, factor_code]),])
+  worst_item_loads[[i]] <- round(min(plot_data[, factor_code]), 3)
+  best_item_ids[[i]] <- rownames(plot_data[which.max(plot_data[, factor_code]),])
+  best_item_loads[[i]] <- round(max(plot_data[, factor_code]), 3)
+}
+
+```
+#Outcome Subscores: `r outcome_name`
+
+*`r as.Date(date, "%Y%m%d")`*
+
+&nbsp;
+
+To investigate how accurately items are assigned to outcome categories,
+a series of analyses were completed to determine items' factor loadings. 
+
+##Dataset
+The dataset analyzed consisted of responses to the `r CP_year` 
+Comprehensive Predictor, Forms `r CP_forms`, 
+from test sessions that were completed between `r daterange1_1` and `r daterange1_2`
+or `r daterange2_1` or `r daterange2_2`. 
+
+All respondents were students from BSN institutions.
+Pre-test items were not included. These decisions were made in order to select
+a dataset that represented optimal testing conditions.
+
+The dataset for the `r outcome_name` outcome included 
+`r prettyNum(nrow(extract.mirt(model, "data")), big.mark = ",")` responses to 
+`r n_items` items that were tagged to the outcome. 
+
+##Factors within `r outcome_name` 
+The `r outcome_name` outcome has `r n_factors` factors, or subscores. Items are 
+assigned to these factors as follows:
+
+`r knitr::kable(N_count)`
+
+A brief explanation of factor loadings follows, and graphical representations of 
+the factor loadings for each subscore are provided on the following pages. 
+
+\pagebreak
+
+##Factor Loadings
+Factor loadings are a way of quantifying each item's relationship to the 
+underlying factor it is thought to measure. In these analyses, the factors are
+the categories within the `r outcome_name` outcome. In the analysis, the construct
+each factor represents is inferred from the response patterns.
+
+Larger factor loadings are better, as they indicate that the item is more strongly
+related to the factor it is thought to measure. Items with small factor loadings
+generally have content that is unrelated to the factor. Items with negative factor
+loadings generally contain content that is inversely related to the factor.
+
+Factor analysis is not a perfect process.
+While item content is typically thought to explain factor loadings, other item 
+properties such as response mode can also influence factor loadings. Additionally, 
+if items are incorrectly assigned, the factor's inferred construct 
+may not actually be representative of the desired construct intended by test developers.
+
+&nbsp;
+
+The factor loadings in the graphs below are color-coded according to their magnitude:
+
+* < 0.00: These items are negatively related to the factor
+* 0.00 - 0.32: These items are considered non-loading, or unrelated to the factor
+* 0.33 - 0.45: These items' relationship to the factor is considered poor
+* 0.46 - 0.55: These items' relationship to the factor is considered fair
+* 0.56 - 0.63: These items' relationship to the factor is considered good
+* 0.64 - 0.71: These items' relationship to the factor is considered very good
+* 0.72 - 1.00: These items' relationship to the factor is considered excellent
+
+
+\pagebreak
+
+```{r analysis_out, results = "asis", fig.height = 6}
+for(i in 1:length(subscore_plots)){
+  cat("\n\n")
+  cat("##Factor code: ", gsub("F", "", colnames(factor_load)[i]))
+  cat("\n\n")
+  cat("##Factor name: ", unique(outcome_code_key[which(outcome_code_key$OutcomeID_map == 
+                                                          gsub("F", "", colnames(factor_load)[i])),
+                                  "OutcomeDescription_map"]))  
+  cat("\n\n")
+  print(subscore_plots[[i]])
+  cat("\n\n\\pagebreak\n\n")
+  
+
+  cat("\n\n")
+  
+  cat(paste0("**Worst item for ", unique(outcome_code_key[which(outcome_code_key$OutcomeID_map == 
+                                                          gsub("F", "", colnames(factor_load)[i])),
+                                                          "OutcomeDescription_map"]),
+             ":** ", worst_item_ids[[i]],
+             ", which had a loading of ", worst_item_loads[[i]]))
+  cat("\n\n")
+  
+  worst_item_temp <- item_content[which(item_content$QuestionID == worst_item_ids[[i]]),]
+  
+  cat(unique(worst_item_temp$stem), "\n\n")
+  cat("A. ", worst_item_temp[1, "responseopt"], "\n\n")
+  cat("B. ", worst_item_temp[2, "responseopt"], "\n\n")
+  cat("C. ", worst_item_temp[3, "responseopt"], "\n\n")
+  cat("D. ", worst_item_temp[4, "responseopt"], "\n\n")
+  
+  cat("\n\n\\bigskip\\bigskip\\bigskip\n\n")
+  
+  cat(paste0("**Best item for ", unique(outcome_code_key[which(outcome_code_key$OutcomeID_map == 
+                                                          gsub("F", "", colnames(factor_load)[i])),
+                                                          "OutcomeDescription_map"]),
+             ":** ", best_item_ids[[i]],
+             ", which had a loading of ", best_item_loads[[i]]))
+  
+  cat("\n\n")
+  
+  best_item_temp <- item_content[which(item_content$QuestionID == best_item_ids[[i]]),]
+  
+  cat(unique(best_item_temp$stem), "\n\n")
+  cat("A. ", best_item_temp[1, "responseopt"], "\n\n")
+  cat("B. ", best_item_temp[2, "responseopt"], "\n\n")
+  cat("C. ", best_item_temp[3, "responseopt"], "\n\n")
+  cat("D. ", best_item_temp[4, "responseopt"], "\n\n")
+  
+  cat("\n\n")
+  
+  cat("***")
+}
+```
+
