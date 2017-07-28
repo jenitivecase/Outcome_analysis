@@ -10,29 +10,54 @@ knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
 
 source("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/options.R")
 
-item_content <- read.xlsx("item_content_from_QBTB-db.xlsx")
+item_content <- read.xlsx("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/Outcome Modeling/Outcome_analysis/Reporting/item_content_from_QBTB-db.xlsx")
+
+item_content[which(item_content$IsCorrect == 1), "responseopt"] <- 
+  paste0(item_content[which(item_content$IsCorrect == 1), "responseopt"], " (c)")
+
+item_content <- as.data.frame(apply(item_content, 2, FUN = iconv, from = "", to = "ASCII", sub=''))
+
+item_data <- item_data
+item_list_descriptor <- item_list_descriptor
+item_list_text <- item_list_text
 
 ```
 
-```{r item_output}
+```{r item_output, results = "asis"}
 cat("\n\n")
-cat("##", item_list_descriptor))
+cat("#", item_list_descriptor)
 cat("\n\n")
 cat(item_list_text)  
-cat("\n\n")
+cat("\n\n\\medskip\n\n")
 
-for(item in 1:nrow(item_data)){
-  cat("Item ", as.character(worst_item_ids[[i]][item]),
-           ", which had a loading of ", sprintf("%.3f", as.numeric(worst_item_loads[[i]][item])))
+item_ids <- unique(item_data$Item)
+
+for(item in 1:length(item_ids)){
+  subset <- item_data[which(item_data$Item == item_ids[item]),]
+  
+  cat("**Item ", as.character(subset[1, "Item"]), "**")
   cat("\n\n")
 
-  worst_item_temp <- item_content[which(item_content$QuestionID == worst_item_ids[[i]][item]),]
+  item_temp <- item_content[which(item_content$QuestionID == as.character(subset[1, "Item"])),]
   
-  cat(unique(worst_item_temp$stem), "\n\n")
-  cat("A. ", worst_item_temp[1, "responseopt"], "\n\n")
-  cat("B. ", worst_item_temp[2, "responseopt"], "\n\n")
-  cat("C. ", worst_item_temp[3, "responseopt"], "\n\n")
-  cat("D. ", worst_item_temp[4, "responseopt"], "\n\n")
+  cat(unique(item_temp$stem), "\n\n")
+  cat("A. ", item_temp[1, "responseopt"], "\n\n")
+  cat("B. ", item_temp[2, "responseopt"], "\n\n")
+  cat("C. ", item_temp[3, "responseopt"], "\n\n")
+  cat("D. ", item_temp[4, "responseopt"], "\n\n")
+  
+  cat("\n\n")
+  cat("This item is mapped to the following outcome areas: ")
+  cat("\n\n")
+  
+  
+  for(area in 1:nrow(subset)){
+    cat("CP ", as.character(subset[area, "Year"]),": ", 
+        as.character(subset[area, "Outcome"])," - ", 
+        as.character(subset[area, "Factor"]),", with a loading of ",
+        sprintf("%.3f", as.numeric(subset[area, "Loading"])), sep = "")
+    cat("\n\n")
+  }
   
   cat("\n\n\\bigskip\n\n")
 }
