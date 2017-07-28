@@ -1,5 +1,6 @@
 source("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/options.R")
 
+out_folder <- "Misc_Item_Reports"
 
 worst_items_2013 <- read.xlsx("./Reporting/Item Content Information/CP_BestWorstItems_20170728.xlsx", 
                               sheet = "2013worst_items")
@@ -45,7 +46,8 @@ all_items_dups <- all_items %>%
 
 most_interesting <- all_items_dups %>%
   group_by(Item) %>%
-  filter(length(unique(Type)) > 1) 
+  filter(length(unique(Type)) > 1) %>%
+  ungroup()
 
 bad_items <- all_items_dups %>%
   group_by(Item) %>%
@@ -55,7 +57,23 @@ bad_items <- all_items_dups %>%
   select(-types) %>%
   filter(Type == "worst")
 
+#### REALLY BAD ITEMS ####
 really_bad_items <- bad_items %>%
   filter(Loading < 0) %>%
   group_by(Item) %>%
-  filter(length(Item) > 1)
+  filter(length(Item) > 1) %>%
+  ungroup()
+
+item_data <- really_bad_items
+short_descriptor <- "Worst_items"
+item_list_descriptor <- "Items With Only Negative Loadings & >=2 Negative Loadings"
+item_list_text <- paste0("These ", nrow(item_data), " items only appeared in the worst-loading items on their 
+                         given subscores, had only negative loadings, and had two or more
+                         of those negative loadings.")
+rmarkdown::render(paste0("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/Outcome Modeling/", 
+                        "Outcome_analysis/Reporting/Item Content Information/Item_list_output.Rmd"),
+                  output_file = paste0(short_descriptor, "_Report_", date, ".pdf"),
+                  output_dir = paste0("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/Outcome Modeling/", 
+                                      "Outcome_analysis/Reporting/Item Content Information/", out_folder))
+
+
