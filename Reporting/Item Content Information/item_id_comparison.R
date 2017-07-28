@@ -33,6 +33,9 @@ all_items <- bind_rows(list(worst_items_2013, worst_items_2016,
                             best_items_2013, best_items_2016)) %>%
   filter(!is.na(Item))
 
+total_item_num <- nrow(all_items)
+
+#### ALL DUPLICATES ####
 all_items_dups <- all_items %>%
   group_by(Item) %>%
   mutate(duplicates = length(unique(uniqueid))) %>%
@@ -43,6 +46,19 @@ all_items_dups <- all_items %>%
   unique() %>%
   arrange(Item, Loading, Type) %>%
   select(-uniqueid)
+
+item_data <-  all_items_dups
+short_descriptor <- "All_Duplicates"
+item_list_descriptor <- "Items Appearing on Multiple Subscores"
+item_list_text <- paste0("These ", nrow(item_data), " items appeared in the worst-loading 
+                         or best-loading items on multiple subscores. These items are
+                         a subset of the ", total_item_num, " total items analyzed 
+                         from the 2013 and 2016 Comprehensive Predictor.")
+rmarkdown::render(paste0("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/Outcome Modeling/", 
+                         "Outcome_analysis/Reporting/Item Content Information/Item_list_output.Rmd"),
+                  output_file = paste0(short_descriptor, "_Report_", date, ".pdf"),
+                  output_dir = paste0("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/Outcome Modeling/", 
+                                      "Outcome_analysis/Reporting/Item Content Information/", out_folder))
 
 
 #### INTERESTING ITEMS ####
@@ -56,7 +72,9 @@ short_descriptor <- "Worst_AND_Best_Items"
 item_list_descriptor <- "Items Appearing in Worst-Loading Items and Best-Loading Items"
 item_list_text <- paste0("These ", nrow(item_data), " items appeared in the worst-loading items 
                          on at least one subscore and in the best-loading items on at
-                         least one other subscore.")
+                         least one other subscore. These items are
+                         a subset of the ", total_item_num, " total items analyzed 
+                         from the 2013 and 2016 Comprehensive Predictor.")
 rmarkdown::render(paste0("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/Outcome Modeling/", 
                          "Outcome_analysis/Reporting/Item Content Information/Item_list_output.Rmd"),
                   output_file = paste0(short_descriptor, "_Report_", date, ".pdf"),
@@ -76,7 +94,9 @@ item_data <- bad_items
 short_descriptor <- "Bad_items"
 item_list_descriptor <- "Items Only Appearing in Worst-Loading Items"
 item_list_text <- paste0("These ", nrow(item_data), " items only appeared in the worst-loading items on their 
-                         given subscores.")
+                         given subscores. These items are
+                         a subset of the ", total_item_num, " total items analyzed 
+                         from the 2013 and 2016 Comprehensive Predictor.")
 rmarkdown::render(paste0("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/Outcome Modeling/", 
                          "Outcome_analysis/Reporting/Item Content Information/Item_list_output.Rmd"),
                   output_file = paste0(short_descriptor, "_Report_", date, ".pdf"),
@@ -95,7 +115,9 @@ short_descriptor <- "Worst_items"
 item_list_descriptor <- "Items With Only Negative Loadings & >=2 Negative Loadings"
 item_list_text <- paste0("These ", nrow(item_data), " items only appeared in the worst-loading items on their 
                          given subscores, had only negative loadings, and had two or more
-                         of those negative loadings.")
+                         of those negative loadings. These items are
+                         a subset of the ", total_item_num, " total items analyzed 
+                         from the 2013 and 2016 Comprehensive Predictor.")
 rmarkdown::render(paste0("K:/AscendKC/Corp/R_and_D/1-USERS/Jennifer Brussow/Outcome Modeling/", 
                         "Outcome_analysis/Reporting/Item Content Information/Item_list_output.Rmd"),
                   output_file = paste0(short_descriptor, "_Report_", date, ".pdf"),
