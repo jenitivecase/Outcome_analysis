@@ -18,4 +18,7 @@ data$TTR_Categ <- as.character(data$TTR_Categ)
 test <- unique(data[, c("TTR_Categ", "qbtbQuestionID")])
 
 item_count <- data.frame(table(test$TTR_Categ))
-table(item_count$Freq)
+out_table <- data.frame(table(item_count$Freq))
+names(out_table) <- c("Num Items Assigned to Topic", "Number of Topics")
+
+write.csv(out_table, "Topics-to-Review_item-count.csv", row.names = FALSE)
